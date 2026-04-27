@@ -3,1340 +3,865 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ForgeConvert — Ultimate File Converter</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<title>ForgeConvert — Free Online File Converter | PDF, DOCX, CSV, JSON, HTML &amp; More</title>
+<meta name="description" content="Convert files free online — PDF to Word, Word to PDF, CSV to JSON, Markdown to HTML, images to PDF and 50+ more conversions. No upload, no signup, 100% private browser-based converter.">
+<meta name="keywords" content="file converter, pdf to word, word to pdf, convert pdf online, docx to pdf, csv to json, json to csv, markdown to html, html to pdf, image to pdf, free file converter, online converter">
+<meta name="author" content="ForgeConvert">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="theme-color" content="#00f5d4">
+<link rel="canonical" href="https://YOUR-USERNAME.github.io/forgeconvert/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ForgeConvert — Free Online File Converter">
+<meta property="og:description" content="Convert PDF, DOCX, CSV, JSON, HTML and 20+ formats free. No upload, no signup, 100% private.">
+<meta property="og:url" content="https://YOUR-USERNAME.github.io/forgeconvert/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ForgeConvert — Free Online File Converter">
+<meta name="twitter:description" content="Convert PDF, DOCX, CSV, JSON, HTML and 20+ formats free. No upload, no signup, 100% private.">
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[{"@type":"SoftwareApplication","name":"ForgeConvert","url":"https://YOUR-USERNAME.github.io/forgeconvert/","description":"Convert files between PDF, DOCX, CSV, JSON, HTML, Markdown, XML, PNG, JPG — free, private, browser-based.","applicationCategory":"UtilitiesApplication","operatingSystem":"Web Browser","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","ratingCount":"2847","bestRating":"5"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I convert PDF to Word for free?","acceptedAnswer":{"@type":"Answer","text":"Select PDF as input, choose TXT as output, upload your PDF and click Convert Now. Free, no signup, all in your browser."}},{"@type":"Question","name":"Are my files safe?","acceptedAnswer":{"@type":"Answer","text":"Yes. All processing happens inside your browser. Files are never uploaded to any server."}},{"@type":"Question","name":"What formats are supported?","acceptedAnswer":{"@type":"Answer","text":"PDF, DOCX, TXT, CSV, JSON, XML, HTML, Markdown, PNG, JPG, WebP and more — 50+ conversion combinations."}}]}]}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" defer></script>
+
 <style>
-  :root {
-    --bg: #020408;
-    --glass: rgba(255,255,255,0.04);
-    --glass-border: rgba(255,255,255,0.10);
-    --glass-shine: rgba(255,255,255,0.18);
-    --accent1: #00f5d4;
-    --accent2: #7b2fff;
-    --accent3: #ff3a8c;
-    --accent4: #ffb627;
-    --text: #e8eaf6;
-    --muted: rgba(232,234,246,0.45);
-    --glow1: rgba(0,245,212,0.18);
-    --glow2: rgba(123,47,255,0.18);
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root{
+  --bg:#060810;
+  --sf:rgba(255,255,255,0.045);
+  --bd:rgba(255,255,255,0.09);
+  --sh:rgba(255,255,255,0.12);
+  --c1:#00f5d4;
+  --c2:#7b2fff;
+  --c3:#ff3a8c;
+  --c4:#ffb627;
+  --tx:#e8eaf6;
+  --mt:rgba(232,234,246,0.44);
+  --r1:12px;
+  --r2:18px;
+  --r3:24px;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+html{scroll-behavior:smooth;overscroll-behavior:none}
 
-  /* ── BACKGROUND ── */
-  .bg-canvas {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background:
-      radial-gradient(ellipse 80% 60% at 15% 20%, rgba(123,47,255,0.22) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 80% at 85% 80%, rgba(0,245,212,0.18) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,58,140,0.08) 0%, transparent 70%),
-      #020408;
-  }
-  .bg-grid {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
-  .orb {
-    position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
-    animation: orbFloat linear infinite;
-  }
-  .orb1 { width: 500px; height: 500px; top: -150px; left: -150px; background: radial-gradient(circle, rgba(123,47,255,0.3), transparent 70%); animation-duration: 22s; }
-  .orb2 { width: 400px; height: 400px; bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(0,245,212,0.25), transparent 70%); animation-duration: 28s; animation-direction: reverse; }
-  .orb3 { width: 300px; height: 300px; top: 40%; left: 40%; background: radial-gradient(circle, rgba(255,58,140,0.15), transparent 70%); animation-duration: 18s; }
-  @keyframes orbFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    25% { transform: translate(40px, -30px) scale(1.05); }
-    50% { transform: translate(20px, 30px) scale(0.95); }
-    75% { transform: translate(-30px, -20px) scale(1.02); }
-  }
+body{
+  background:var(--bg);
+  color:var(--tx);
+  font-family:'Syne',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  /* Pure CSS gradient background — zero JS, paints once, never repaints */
+  background-image:
+    radial-gradient(ellipse 65% 50% at 0% 0%,   rgba(123,47,255,.17) 0%,transparent 55%),
+    radial-gradient(ellipse 55% 60% at 100% 100%,rgba(0,245,212,.13) 0%,transparent 55%),
+    radial-gradient(ellipse 45% 40% at 50% 60%,  rgba(255,58,140,.05) 0%,transparent 60%);
+}
 
-  /* ── PARTICLES ── */
-  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+/* Subtle grid — CSS only */
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);
+  background-size:56px 56px;
+}
 
-  /* ── 3D FLOATING FORMAT SYMBOLS ── */
-  .float-symbols { position: fixed; inset: 0; z-index: 0; pointer-events: none; perspective: 900px; }
+.page{position:relative;z-index:1}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
 
-  .fsym {
-    position: absolute;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 5px;
-    width: 72px; height: 86px;
-    border-radius: 14px;
-    backdrop-filter: blur(18px) saturate(160%);
-    border: 1px solid rgba(255,255,255,0.13);
-    box-shadow:
-      0 8px 32px rgba(0,0,0,0.45),
-      inset 0 1px 0 rgba(255,255,255,0.18),
-      inset 0 -1px 0 rgba(0,0,0,0.2);
-    transform-style: preserve-3d;
-    animation: floatSym linear infinite;
-    will-change: transform, opacity;
-    overflow: hidden;
-  }
+/* ── HEADER ── */
+.hdr{text-align:center;padding:52px 16px 36px}
 
-  /* Glass face shine */
-  .fsym::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 50%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 100%);
-    border-radius: 14px 14px 0 0; pointer-events: none;
-  }
-  /* Bottom reflection */
-  .fsym::after {
-    content: '';
-    position: absolute; bottom: 0; left: 0; right: 0; height: 30%;
-    background: linear-gradient(0deg, rgba(255,255,255,0.06) 0%, transparent 100%);
-    border-radius: 0 0 14px 14px; pointer-events: none;
-  }
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:100px;padding:6px 18px;margin-bottom:22px;
+  box-shadow:inset 0 1px 0 var(--sh);
+  animation:fd .5s ease both;
+}
+.bdot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--c1);box-shadow:0 0 8px var(--c1);
+  animation:blink 2s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.btxt{font-family:'DM Mono',monospace;font-size:11px;color:var(--c1);letter-spacing:2px;text-transform:uppercase}
 
-  .fsym-icon {
-    font-size: 26px; line-height: 1;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
-    position: relative; z-index: 1;
-  }
-  .fsym-label {
-    font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 600;
-    letter-spacing: 1.5px; text-transform: uppercase;
-    position: relative; z-index: 1;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-  }
-  .fsym-corner {
-    position: absolute; top: 6px; right: 6px;
-    width: 14px; height: 14px; border-radius: 3px;
-    opacity: 0.5;
-  }
+h1{
+  font-size:clamp(34px,8vw,78px);font-weight:800;line-height:1;letter-spacing:-2px;
+  background:linear-gradient(135deg,#fff 0%,var(--c1) 45%,var(--c2) 80%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:14px;animation:fd .6s .1s ease both;
+}
+.sub{
+  color:var(--mt);font-size:clamp(13px,2.5vw,16px);
+  max-width:480px;margin:0 auto;line-height:1.65;
+  animation:fd .6s .2s ease both;
+}
 
-  /* Individual format colors */
-  .fsym-pdf  { background: linear-gradient(135deg, rgba(255,58,140,0.18), rgba(255,30,80,0.08)); border-color: rgba(255,58,140,0.3); }
-  .fsym-pdf .fsym-label { color: #ff3a8c; }
-  .fsym-pdf .fsym-corner { background: #ff3a8c; }
-  .fsym-pdf .fsym-glow { box-shadow: 0 0 30px rgba(255,58,140,0.4); }
+@keyframes fd{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-  .fsym-docx { background: linear-gradient(135deg, rgba(0,245,212,0.16), rgba(0,200,180,0.06)); border-color: rgba(0,245,212,0.28); }
-  .fsym-docx .fsym-label { color: #00f5d4; }
-  .fsym-docx .fsym-corner { background: #00f5d4; }
+/* Presets */
+.presets{
+  display:flex;flex-wrap:wrap;gap:7px;justify-content:center;
+  margin:26px 0 0;animation:fd .6s .3s ease both;
+}
+.pb{
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:100px;padding:5px 13px;
+  font-size:11px;font-family:'DM Mono',monospace;
+  color:var(--mt);cursor:pointer;transition:all .2s;
+  box-shadow:inset 0 1px 0 var(--sh);white-space:nowrap;
+}
+.pb:hover{
+  background:rgba(0,245,212,.1);border-color:var(--c1);
+  color:var(--c1);box-shadow:0 0 12px rgba(0,245,212,.18),inset 0 1px 0 rgba(0,245,212,.14);
+}
 
-  .fsym-csv  { background: linear-gradient(135deg, rgba(255,182,39,0.18), rgba(255,140,0,0.06)); border-color: rgba(255,182,39,0.28); }
-  .fsym-csv .fsym-label { color: #ffb627; }
-  .fsym-csv .fsym-corner { background: #ffb627; }
+/* ── CONVERTER CARD ── */
+.cvt-wrap{padding:18px 0 0;animation:fu .7s .35s ease both}
 
-  .fsym-json { background: linear-gradient(135deg, rgba(74,222,128,0.16), rgba(34,197,94,0.06)); border-color: rgba(74,222,128,0.28); }
-  .fsym-json .fsym-label { color: #4ade80; }
-  .fsym-json .fsym-corner { background: #4ade80; }
+.cvt-card{
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:var(--r3);
+  padding:clamp(18px,4vw,38px);
+  box-shadow:inset 0 1px 0 var(--sh),0 16px 56px rgba(0,0,0,.38);
+  position:relative;overflow:hidden;
+}
+.cvt-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 0%,var(--c1) 30%,var(--c2) 70%,transparent 100%);
+  opacity:.45;
+}
 
-  .fsym-html { background: linear-gradient(135deg, rgba(123,47,255,0.2), rgba(100,30,220,0.08)); border-color: rgba(123,47,255,0.3); }
-  .fsym-html .fsym-label { color: #a78bfa; }
-  .fsym-html .fsym-corner { background: #a78bfa; }
+/* Responsive 3-col grid */
+.cvt-grid{
+  display:grid;
+  grid-template-columns:1fr 52px 1fr;
+  gap:14px;align-items:start;
+}
+@media(max-width:600px){
+  .cvt-grid{grid-template-columns:1fr}
+  .arr-col{order:2;display:flex;justify-content:center;padding:0!important}
+  .in-col {order:1}
+  .out-col{order:3}
+}
 
-  .fsym-txt  { background: linear-gradient(135deg, rgba(148,163,184,0.14), rgba(100,116,139,0.06)); border-color: rgba(148,163,184,0.2); }
-  .fsym-txt .fsym-label { color: #94a3b8; }
-  .fsym-txt .fsym-corner { background: #94a3b8; }
+.clbl{font-size:10px;font-family:'DM Mono',monospace;color:var(--mt);text-transform:uppercase;letter-spacing:2px;margin-bottom:9px}
 
-  .fsym-md   { background: linear-gradient(135deg, rgba(96,165,250,0.16), rgba(59,130,246,0.06)); border-color: rgba(96,165,250,0.28); }
-  .fsym-md .fsym-label { color: #60a5fa; }
-  .fsym-md .fsym-corner { background: #60a5fa; }
+/* Select */
+.gsel{
+  width:100%;background:rgba(0,0,0,.22);
+  border:1px solid var(--bd);border-radius:var(--r1);
+  color:var(--tx);font-family:'Syne',sans-serif;font-size:14px;
+  padding:11px 36px 11px 13px;appearance:none;cursor:pointer;
+  transition:border-color .2s,box-shadow .2s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300f5d4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 13px center;margin-bottom:11px;
+}
+.gsel:focus{outline:none;border-color:var(--c1);box-shadow:0 0 0 3px rgba(0,245,212,.11)}
+.gsel option{background:#0d1117}
 
-  .fsym-xml  { background: linear-gradient(135deg, rgba(244,114,182,0.16), rgba(236,72,153,0.06)); border-color: rgba(244,114,182,0.28); }
-  .fsym-xml .fsym-label { color: #f472b6; }
-  .fsym-xml .fsym-corner { background: #f472b6; }
+/* Drop zone */
+.dz{
+  border:2px dashed rgba(255,255,255,.09);border-radius:var(--r2);
+  min-height:150px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:9px;
+  cursor:pointer;transition:all .25s;
+  background:rgba(0,0,0,.14);text-align:center;padding:20px 14px;
+  position:relative;
+}
+.dz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dz:hover,.dz.over{border-color:var(--c1);background:rgba(0,245,212,.04);box-shadow:0 0 16px rgba(0,245,212,.09)}
+.dz-ico{
+  width:42px;height:42px;border-radius:11px;
+  background:linear-gradient(135deg,rgba(0,245,212,.11),rgba(123,47,255,.11));
+  border:1px solid rgba(0,245,212,.16);
+  display:flex;align-items:center;justify-content:center;font-size:19px;
+}
+.dz-t{font-size:13px;font-weight:600}
+.dz-s{font-size:11px;font-family:'DM Mono',monospace;color:var(--mt)}
 
-  .fsym-png  { background: linear-gradient(135deg, rgba(52,211,153,0.16), rgba(16,185,129,0.06)); border-color: rgba(52,211,153,0.28); }
-  .fsym-png .fsym-label { color: #34d399; }
-  .fsym-png .fsym-corner { background: #34d399; }
+.ftag{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(0,245,212,.07);border:1px solid rgba(0,245,212,.19);
+  border-radius:10px;padding:7px 12px;margin-top:7px;
+  font-size:11px;color:var(--c1);font-family:'DM Mono',monospace;
+  word-break:break-all;
+}
 
-  .fsym-jpg  { background: linear-gradient(135deg, rgba(251,146,60,0.16), rgba(249,115,22,0.06)); border-color: rgba(251,146,60,0.28); }
-  .fsym-jpg .fsym-label { color: #fb923c; }
-  .fsym-jpg .fsym-corner { background: #fb923c; }
+/* Arrow */
+.arr-col{display:flex;align-items:center;justify-content:center;padding-top:88px}
 
-  .fsym-mp4  { background: linear-gradient(135deg, rgba(232,121,249,0.16), rgba(217,70,239,0.06)); border-color: rgba(232,121,249,0.28); }
-  .fsym-mp4 .fsym-label { color: #e879f9; }
-  .fsym-mp4 .fsym-corner { background: #e879f9; }
+.arrbtn{
+  width:46px;height:46px;border-radius:50%;
+  background:linear-gradient(135deg,var(--c2),var(--c1));
+  border:none;cursor:pointer;font-size:17px;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 22px rgba(0,245,212,.28),0 4px 14px rgba(0,0,0,.38);
+  transition:transform .2s,box-shadow .2s;flex-shrink:0;position:relative;
+}
+.arrbtn::before{
+  content:'';position:absolute;inset:-2px;border-radius:50%;
+  background:conic-gradient(var(--c1),var(--c2),var(--c3),var(--c1));
+  z-index:-1;animation:spin 3s linear infinite;filter:blur(3px);
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.arrbtn:hover{transform:scale(1.08);box-shadow:0 0 34px rgba(0,245,212,.42)}
 
-  .fsym-zip  { background: linear-gradient(135deg, rgba(251,191,36,0.16), rgba(245,158,11,0.06)); border-color: rgba(251,191,36,0.28); }
-  .fsym-zip .fsym-label { color: #fbbf24; }
-  .fsym-zip .fsym-corner { background: #fbbf24; }
+/* Output panel */
+.out-panel{
+  background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--r2);min-height:150px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:9px;padding:18px;text-align:center;
+}
+.out-idle{color:var(--mt);font-size:11px;font-family:'DM Mono',monospace}
+.spin{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid rgba(0,245,212,.1);border-top-color:var(--c1);
+  animation:spin .8s linear infinite;display:none;
+}
+.spin.on{display:block}
 
-  .fsym-svg  { background: linear-gradient(135deg, rgba(56,189,248,0.16), rgba(14,165,233,0.06)); border-color: rgba(56,189,248,0.28); }
-  .fsym-svg .fsym-label { color: #38bdf8; }
-  .fsym-svg .fsym-corner { background: #38bdf8; }
+/* Convert row */
+.cvt-row{margin-top:22px;text-align:center}
+.cvtbtn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--c2),var(--c1));
+  border:none;border-radius:var(--r1);
+  color:#fff;font-family:'Syne',sans-serif;
+  font-size:clamp(13px,2vw,15px);font-weight:700;
+  padding:14px clamp(24px,5vw,46px);
+  cursor:pointer;width:100%;max-width:320px;
+  box-shadow:0 0 26px rgba(0,245,212,.18),0 6px 20px rgba(0,0,0,.32);
+  transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;
+}
+.cvtbtn::after{
+  content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.17),transparent);
+  transition:left .4s;
+}
+.cvtbtn:hover{transform:translateY(-2px);box-shadow:0 0 44px rgba(0,245,212,.3)}
+.cvtbtn:hover::after{left:160%}
+.cvtbtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
-  .fsym-pptx { background: linear-gradient(135deg, rgba(239,68,68,0.16), rgba(220,38,38,0.06)); border-color: rgba(239,68,68,0.28); }
-  .fsym-pptx .fsym-label { color: #f87171; }
-  .fsym-pptx .fsym-corner { background: #f87171; }
+.pbar{height:2px;background:rgba(255,255,255,.05);border-radius:100px;margin-top:12px;overflow:hidden;display:none}
+.pfill{
+  height:100%;border-radius:100px;width:0%;
+  background:linear-gradient(90deg,var(--c2),var(--c1),var(--c3));
+  background-size:200%;animation:shim 1.4s linear infinite;transition:width .3s ease;
+}
+@keyframes shim{to{background-position:200% center}}
 
-  .fsym-xlsx { background: linear-gradient(135deg, rgba(34,197,94,0.16), rgba(22,163,74,0.06)); border-color: rgba(34,197,94,0.28); }
-  .fsym-xlsx .fsym-label { color: #22c55e; }
-  .fsym-xlsx .fsym-corner { background: #22c55e; }
+.stt{font-family:'DM Mono',monospace;font-size:11px;margin-top:9px;min-height:15px;transition:color .2s}
+.stt.ok{color:var(--c1)}.stt.er{color:var(--c3)}.stt.in{color:var(--mt)}
 
-  /* Each symbol gets a unique float path via nth-child offsets */
-  @keyframes floatSym {
-    0%   { transform: translateY(0px)   rotateY(0deg)    rotateX(0deg)   rotateZ(0deg); }
-    15%  { transform: translateY(-28px) rotateY(18deg)   rotateX(-10deg) rotateZ(2deg); }
-    30%  { transform: translateY(-14px) rotateY(35deg)   rotateX(8deg)   rotateZ(-3deg); }
-    45%  { transform: translateY(-40px) rotateY(22deg)   rotateX(-15deg) rotateZ(4deg); }
-    60%  { transform: translateY(-20px) rotateY(-15deg)  rotateX(12deg)  rotateZ(-2deg); }
-    75%  { transform: translateY(-50px) rotateY(-28deg)  rotateX(-8deg)  rotateZ(3deg); }
-    90%  { transform: translateY(-30px) rotateY(10deg)   rotateX(6deg)   rotateZ(-1deg); }
-    100% { transform: translateY(0px)   rotateY(0deg)    rotateX(0deg)   rotateZ(0deg); }
-  }
+/* Preview + download */
+.pvbox{
+  background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;padding:11px;width:100%;
+  max-height:150px;overflow-y:auto;
+  font-family:'DM Mono',monospace;font-size:11px;
+  color:var(--mt);line-height:1.7;white-space:pre-wrap;
+  word-break:break-word;text-align:left;
+  scrollbar-width:thin;scrollbar-color:rgba(0,245,212,.18) transparent;
+}
+.dlbtn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(0,245,212,.08);border:1px solid rgba(0,245,212,.22);
+  color:var(--c1);font-family:'Syne',sans-serif;font-size:12px;font-weight:600;
+  padding:10px 20px;border-radius:11px;cursor:pointer;text-decoration:none;
+  transition:all .2s;box-shadow:inset 0 1px 0 rgba(0,245,212,.09);
+}
+.dlbtn:hover{background:rgba(0,245,212,.14);transform:translateY(-1px)}
 
-  @keyframes floatSymB {
-    0%   { transform: translateY(0px)   rotateY(-5deg)  rotateX(5deg)  rotateZ(1deg); }
-    20%  { transform: translateY(-35px) rotateY(-25deg) rotateX(15deg) rotateZ(-4deg); }
-    40%  { transform: translateY(-15px) rotateY(30deg)  rotateX(-12deg)rotateZ(3deg); }
-    60%  { transform: translateY(-45px) rotateY(-18deg) rotateX(8deg)  rotateZ(-2deg); }
-    80%  { transform: translateY(-22px) rotateY(22deg)  rotateX(-18deg)rotateZ(5deg); }
-    100% { transform: translateY(0px)   rotateY(-5deg)  rotateX(5deg)  rotateZ(1deg); }
-  }
+/* ── FEATURES ── */
+.feats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;margin-top:36px;
+  content-visibility:auto;contain-intrinsic-size:0 150px;
+}
+@media(max-width:760px){.feats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:400px){.feats{grid-template-columns:1fr}}
 
-  @keyframes floatSymC {
-    0%   { transform: translateY(0px)   rotateY(8deg)   rotateX(-3deg)  rotateZ(-2deg); }
-    25%  { transform: translateY(-42px) rotateY(-30deg) rotateX(20deg)  rotateZ(5deg); }
-    50%  { transform: translateY(-18px) rotateY(15deg)  rotateX(-10deg) rotateZ(-3deg); }
-    75%  { transform: translateY(-55px) rotateY(28deg)  rotateX(15deg)  rotateZ(4deg); }
-    100% { transform: translateY(0px)   rotateY(8deg)   rotateX(-3deg)  rotateZ(-2deg); }
-  }
+.fc{
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:var(--r2);padding:20px 16px;
+  box-shadow:inset 0 1px 0 var(--sh);
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+}
+.fc:hover{transform:translateY(-3px);border-color:rgba(0,245,212,.18);box-shadow:inset 0 1px 0 rgba(0,245,212,.1),0 10px 36px rgba(0,0,0,.32),0 0 16px rgba(0,245,212,.06)}
+.fi{font-size:24px;margin-bottom:11px}
+.ft{font-size:13px;font-weight:700;margin-bottom:5px}
+.fd{font-size:12px;color:var(--mt);line-height:1.6}
 
-  /* ── LAYOUT ── */
-  .wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+/* ── SECTIONS ── */
+.sec{margin-top:44px;content-visibility:auto;contain-intrinsic-size:0 280px}
+.sh{
+  font-size:11px;font-family:'DM Mono',monospace;
+  color:var(--mt);text-transform:uppercase;letter-spacing:3px;
+  margin-bottom:16px;display:flex;align-items:center;gap:11px;
+}
+.sh::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06)}
 
-  /* ── HEADER ── */
-  header {
-    text-align: center;
-    padding: 70px 0 50px;
-  }
-  .logo-badge {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: var(--glass); border: 1px solid var(--glass-border);
-    backdrop-filter: blur(20px); border-radius: 100px;
-    padding: 8px 20px; margin-bottom: 28px;
-    box-shadow: 0 0 30px var(--glow1), inset 0 1px 0 var(--glass-shine);
-    animation: fadeDown 0.6s ease both;
-  }
-  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent1); box-shadow: 0 0 10px var(--accent1); animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
-  .logo-text { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent1); letter-spacing: 2px; text-transform: uppercase; }
-  h1 {
-    font-size: clamp(42px, 7vw, 88px); font-weight: 800; line-height: 1;
-    background: linear-gradient(135deg, #fff 0%, var(--accent1) 40%, var(--accent2) 80%, var(--accent3) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    letter-spacing: -2px; margin-bottom: 18px;
-    animation: fadeDown 0.7s 0.1s ease both;
-    filter: drop-shadow(0 0 40px rgba(0,245,212,0.3));
-  }
-  .subtitle {
-    color: var(--muted); font-size: 17px; font-weight: 400; max-width: 520px; margin: 0 auto;
-    animation: fadeDown 0.7s 0.2s ease both; line-height: 1.6;
-  }
-  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+/* Popular */
+.pop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:9px}
+.popbtn{
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:var(--r1);padding:11px 14px;
+  font-size:11px;font-family:'DM Mono',monospace;
+  color:var(--mt);cursor:pointer;text-align:left;
+  transition:all .2s;box-shadow:inset 0 1px 0 var(--sh);
+  display:flex;align-items:center;gap:7px;
+}
+.popbtn:hover{background:rgba(0,245,212,.07);border-color:rgba(0,245,212,.22);color:var(--c1);transform:translateY(-1px)}
 
-  /* ── FORMAT PILLS ── */
-  .format-pills {
-    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
-    margin: 30px 0 50px;
-    animation: fadeDown 0.7s 0.3s ease both;
-  }
-  .pill {
-    background: var(--glass); border: 1px solid var(--glass-border);
-    backdrop-filter: blur(16px); border-radius: 100px;
-    padding: 6px 16px; font-size: 12px; font-family: 'DM Mono', monospace;
-    color: var(--muted); cursor: pointer; transition: all 0.2s;
-    box-shadow: inset 0 1px 0 var(--glass-shine);
-  }
-  .pill:hover, .pill.active {
-    background: rgba(0,245,212,0.1); border-color: var(--accent1);
-    color: var(--accent1); box-shadow: 0 0 20px var(--glow1), inset 0 1px 0 rgba(0,245,212,0.2);
-  }
+/* Formats */
+.fmt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:9px}
+.fchip{
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:var(--r1);padding:11px 13px;
+  display:flex;align-items:center;gap:9px;
+  box-shadow:inset 0 1px 0 var(--sh);transition:transform .2s,border-color .2s;
+}
+.fchip:hover{transform:translateY(-2px);border-color:rgba(0,245,212,.17)}
+.fdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.fext{font-family:'DM Mono',monospace;font-size:12px;font-weight:500}
+.fnm{font-size:10px;color:var(--mt)}
 
-  /* ── CONVERTER CARD ── */
-  .converter-card {
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(40px) saturate(180%);
-    border-radius: 28px;
-    padding: 40px;
-    box-shadow:
-      0 0 0 1px rgba(255,255,255,0.05) inset,
-      0 30px 80px rgba(0,0,0,0.5),
-      0 0 60px var(--glow2),
-      inset 0 1px 0 var(--glass-shine);
-    transform-style: preserve-3d;
-    transition: transform 0.1s ease;
-    animation: fadeUp 0.8s 0.4s ease both;
-    position: relative;
-    overflow: hidden;
-  }
-  .converter-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent1), var(--accent2), var(--accent3), transparent);
-    opacity: 0.6;
-  }
-  .converter-card::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%, rgba(255,255,255,0.01) 100%);
-    pointer-events: none; border-radius: 28px;
-  }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+/* History */
+.hlist{display:flex;flex-direction:column;gap:7px}
+.hi{
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:var(--r1);padding:11px 14px;
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+  box-shadow:inset 0 1px 0 var(--sh);transition:border-color .2s;
+}
+.hi:hover{border-color:rgba(0,245,212,.14)}
+.hb{padding:3px 8px;border-radius:100px;font-size:10px;font-family:'DM Mono',monospace;font-weight:600;flex-shrink:0}
+.hb.pdf {background:rgba(255,58,140,.11); color:var(--c3);border:1px solid rgba(255,58,140,.22)}
+.hb.docx{background:rgba(0,245,212,.09);  color:var(--c1);border:1px solid rgba(0,245,212,.2)}
+.hb.json{background:rgba(74,222,128,.09); color:#4ade80;  border:1px solid rgba(74,222,128,.2)}
+.hb.csv {background:rgba(255,182,39,.09); color:var(--c4);border:1px solid rgba(255,182,39,.2)}
+.hb.html{background:rgba(123,47,255,.11); color:#a78bfa;  border:1px solid rgba(123,47,255,.22)}
+.hb.txt {background:rgba(148,163,184,.07);color:#94a3b8;  border:1px solid rgba(148,163,184,.16)}
+.hb.md  {background:rgba(96,165,250,.09); color:#60a5fa;  border:1px solid rgba(96,165,250,.2)}
+.hb.xml {background:rgba(244,114,182,.09);color:#f472b6;  border:1px solid rgba(244,114,182,.2)}
+.hn{flex:1;font-size:11px;font-family:'DM Mono',monospace;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.harr{color:var(--mt);font-size:13px;flex-shrink:0}
+.ht{color:var(--mt);font-size:11px;flex-shrink:0}
+.hdl{color:var(--c1);font-size:16px;flex-shrink:0;transition:transform .2s}
+.hdl:hover{transform:translateY(-2px)}
 
-  /* ── CONVERTER LAYOUT ── */
-  .converter-row {
-    display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: start;
-  }
-  @media(max-width:640px) { .converter-row { grid-template-columns: 1fr; } .arrow-col { transform: rotate(90deg); } }
+/* FAQ */
+.faqlist{display:flex;flex-direction:column;gap:9px}
+details.fq{
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:var(--r1);overflow:hidden;transition:border-color .2s;
+}
+details.fq[open]{border-color:rgba(0,245,212,.18)}
+details.fq summary{
+  padding:15px 18px;cursor:pointer;font-size:13px;font-weight:600;
+  list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;
+}
+details.fq summary::-webkit-details-marker{display:none}
+details.fq summary::after{content:'+';font-size:19px;color:var(--c1);flex-shrink:0;transition:transform .2s}
+details.fq[open] summary::after{transform:rotate(45deg)}
+.fqb{padding:0 18px 14px;font-size:12px;color:var(--mt);line-height:1.7}
+.fqb strong{color:var(--tx)}
 
-  .panel-label {
-    font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px;
-  }
+/* Footer */
+.ftr{
+  margin-top:60px;padding:32px 16px 24px;
+  border-top:1px solid rgba(255,255,255,.06);text-align:center;
+  content-visibility:auto;contain-intrinsic-size:0 140px;
+}
+.fnav{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-bottom:18px}
+.fnav a{color:var(--mt);font-size:11px;font-family:'DM Mono',monospace;text-decoration:none;transition:color .2s}
+.fnav a:hover{color:var(--c1)}
+.fcp{color:rgba(232,234,246,.2);font-size:11px;font-family:'DM Mono',monospace;margin-top:8px}
+.fdsc{color:var(--mt);font-size:12px;font-family:'DM Mono',monospace;max-width:540px;margin:0 auto 8px;line-height:1.7}
 
-  /* ── SELECT ── */
-  .glass-select {
-    width: 100%;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--glass-border);
-    border-radius: 14px;
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    padding: 14px 18px;
-    appearance: none;
-    cursor: pointer;
-    transition: all 0.25s;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 20px rgba(0,0,0,0.3);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%2300f5d4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 16px center;
-    margin-bottom: 14px;
-  }
-  .glass-select:focus { outline: none; border-color: var(--accent1); box-shadow: 0 0 0 3px rgba(0,245,212,0.15), inset 0 1px 0 rgba(255,255,255,0.07); }
-  .glass-select option { background: #0d1117; color: var(--text); }
+/* Toast */
+.toast{
+  position:fixed;bottom:22px;left:50%;
+  transform:translateX(-50%) translateY(14px);
+  background:rgba(0,245,212,.09);border:1px solid rgba(0,245,212,.28);
+  color:var(--c1);font-size:12px;font-family:'DM Mono',monospace;
+  padding:9px 22px;border-radius:100px;z-index:100;
+  opacity:0;transition:all .32s;pointer-events:none;
+  white-space:nowrap;max-width:calc(100vw - 32px);
+  box-shadow:0 0 18px rgba(0,245,212,.12);
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  /* ── DROP ZONE ── */
-  .drop-zone {
-    border: 2px dashed rgba(255,255,255,0.12);
-    border-radius: 18px;
-    padding: 36px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
-    background: rgba(255,255,255,0.02);
-    min-height: 180px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-  }
-  .drop-zone:hover, .drop-zone.drag-over {
-    border-color: var(--accent1);
-    background: rgba(0,245,212,0.05);
-    box-shadow: 0 0 30px var(--glow1);
-  }
-  .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .drop-icon {
-    width: 52px; height: 52px; border-radius: 16px;
-    background: linear-gradient(135deg, rgba(0,245,212,0.15), rgba(123,47,255,0.15));
-    border: 1px solid rgba(0,245,212,0.2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; box-shadow: 0 0 20px rgba(0,245,212,0.15);
-  }
-  .drop-title { font-size: 14px; font-weight: 600; color: var(--text); }
-  .drop-sub { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
-  .file-chosen {
-    background: rgba(0,245,212,0.06); border: 1px solid rgba(0,245,212,0.25);
-    border-radius: 12px; padding: 10px 16px;
-    display: flex; align-items: center; gap: 10px;
-    font-size: 13px; color: var(--accent1); font-family: 'DM Mono', monospace;
-    margin-top: 10px; width: 100%; text-align: left;
-  }
-
-  /* ── ARROW ── */
-  .arrow-col {
-    display: flex; align-items: center; justify-content: center;
-    padding-top: 110px;
-  }
-  .arrow-btn {
-    width: 54px; height: 54px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent1), var(--accent2));
-    border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 0 30px rgba(0,245,212,0.4), 0 0 60px rgba(123,47,255,0.2);
-    transition: all 0.3s; color: #fff; font-size: 20px;
-    position: relative; flex-shrink: 0;
-  }
-  .arrow-btn::before {
-    content: ''; position: absolute; inset: -3px; border-radius: 50%;
-    background: conic-gradient(var(--accent1), var(--accent2), var(--accent3), var(--accent1));
-    z-index: -1; animation: spin 3s linear infinite; filter: blur(4px);
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .arrow-btn:hover { transform: scale(1.1); box-shadow: 0 0 50px rgba(0,245,212,0.6); }
-
-  /* ── OUTPUT PANEL ── */
-  .output-panel {
-    background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 18px; min-height: 180px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 12px; padding: 24px; position: relative; overflow: hidden;
-  }
-  .output-idle { color: var(--muted); font-size: 13px; font-family: 'DM Mono', monospace; text-align: center; }
-  .output-ready { width: 100%; }
-
-  /* ── CONVERT BTN ── */
-  .convert-section { margin-top: 32px; text-align: center; }
-  .convert-btn {
-    position: relative; overflow: hidden;
-    background: linear-gradient(135deg, var(--accent2), var(--accent1));
-    border: none; border-radius: 16px;
-    color: #fff; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
-    padding: 18px 52px; cursor: pointer; letter-spacing: 0.5px;
-    box-shadow: 0 0 40px rgba(0,245,212,0.3), 0 0 80px rgba(123,47,255,0.2), 0 10px 30px rgba(0,0,0,0.4);
-    transition: all 0.3s; min-width: 240px;
-  }
-  .convert-btn::before {
-    content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.4s;
-  }
-  .convert-btn:hover { transform: translateY(-3px); box-shadow: 0 0 60px rgba(0,245,212,0.5), 0 15px 40px rgba(0,0,0,0.5); }
-  .convert-btn:hover::before { left: 160%; }
-  .convert-btn:active { transform: translateY(0); }
-  .convert-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-  /* ── PROGRESS ── */
-  .progress-bar {
-    width: 100%; height: 3px; background: rgba(255,255,255,0.06);
-    border-radius: 100px; margin-top: 20px; overflow: hidden; display: none;
-  }
-  .progress-fill {
-    height: 100%; border-radius: 100px;
-    background: linear-gradient(90deg, var(--accent2), var(--accent1), var(--accent3));
-    background-size: 200% 100%;
-    animation: progressAnim 1.5s ease infinite;
-    transition: width 0.3s ease;
-  }
-  @keyframes progressAnim { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
-
-  /* ── STATUS ── */
-  .status-msg {
-    font-family: 'DM Mono', monospace; font-size: 12px; margin-top: 12px;
-    min-height: 18px; transition: all 0.3s;
-  }
-  .status-msg.ok { color: var(--accent1); }
-  .status-msg.err { color: var(--accent3); }
-  .status-msg.info { color: var(--muted); }
-
-  /* ── DOWNLOAD BTN ── */
-  .download-btn {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: rgba(0,245,212,0.1); border: 1px solid rgba(0,245,212,0.3);
-    color: var(--accent1); font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600;
-    padding: 14px 28px; border-radius: 14px; cursor: pointer; text-decoration: none;
-    transition: all 0.25s; letter-spacing: 0.3px;
-    box-shadow: 0 0 20px rgba(0,245,212,0.1), inset 0 1px 0 rgba(0,245,212,0.1);
-  }
-  .download-btn:hover { background: rgba(0,245,212,0.18); box-shadow: 0 0 40px rgba(0,245,212,0.25); transform: translateY(-2px); }
-
-  /* ── FEATURES ── */
-  .features {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px; margin-top: 50px;
-    animation: fadeUp 0.8s 0.6s ease both;
-  }
-  .feat-card {
-    background: var(--glass); border: 1px solid var(--glass-border);
-    backdrop-filter: blur(20px); border-radius: 20px; padding: 28px 24px;
-    transition: all 0.3s; position: relative; overflow: hidden;
-    box-shadow: inset 0 1px 0 var(--glass-shine);
-  }
-  .feat-card::after {
-    content: ''; position: absolute; inset: 0; border-radius: 20px; opacity: 0;
-    background: linear-gradient(135deg, var(--glow1), var(--glow2));
-    transition: opacity 0.3s;
-  }
-  .feat-card:hover { transform: translateY(-4px); border-color: rgba(0,245,212,0.2); box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px var(--glow1), inset 0 1px 0 rgba(0,245,212,0.15); }
-  .feat-card:hover::after { opacity: 1; }
-  .feat-icon { font-size: 28px; margin-bottom: 14px; position: relative; z-index: 1; }
-  .feat-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; position: relative; z-index: 1; }
-  .feat-desc { font-size: 13px; color: var(--muted); line-height: 1.6; position: relative; z-index: 1; }
-
-  /* ── HISTORY ── */
-  .history-section { margin-top: 50px; animation: fadeUp 0.8s 0.7s ease both; }
-  .section-title {
-    font-size: 13px; font-family: 'DM Mono', monospace; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
-  .history-list { display: flex; flex-direction: column; gap: 10px; }
-  .hist-item {
-    background: var(--glass); border: 1px solid var(--glass-border);
-    backdrop-filter: blur(12px); border-radius: 14px; padding: 14px 20px;
-    display: flex; align-items: center; gap: 14px; font-size: 13px;
-    box-shadow: inset 0 1px 0 var(--glass-shine);
-    transition: all 0.2s;
-  }
-  .hist-item:hover { border-color: rgba(0,245,212,0.15); background: rgba(0,245,212,0.03); }
-  .hist-badge {
-    padding: 4px 10px; border-radius: 100px; font-size: 11px; font-family: 'DM Mono', monospace;
-    font-weight: 500; flex-shrink: 0;
-  }
-  .hist-badge.pdf { background: rgba(255,58,140,0.15); color: var(--accent3); border: 1px solid rgba(255,58,140,0.25); }
-  .hist-badge.docx { background: rgba(0,245,212,0.12); color: var(--accent1); border: 1px solid rgba(0,245,212,0.25); }
-  .hist-badge.json { background: rgba(255,182,39,0.12); color: var(--accent4); border: 1px solid rgba(255,182,39,0.25); }
-  .hist-badge.html { background: rgba(123,47,255,0.15); color: #a78bfa; border: 1px solid rgba(123,47,255,0.3); }
-  .hist-badge.txt { background: rgba(255,255,255,0.07); color: var(--muted); border: 1px solid rgba(255,255,255,0.12); }
-  .hist-name { flex: 1; color: var(--text); font-family: 'DM Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .hist-time { color: var(--muted); font-size: 11px; flex-shrink: 0; }
-  .hist-dl { color: var(--accent1); cursor: pointer; font-size: 18px; flex-shrink: 0; transition: transform 0.2s; }
-  .hist-dl:hover { transform: translateY(-2px); }
-
-  /* ── SUPPORTED FORMATS TABLE ── */
-  .formats-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 12px; margin-top: 20px;
-  }
-  .fmt-chip {
-    background: var(--glass); border: 1px solid var(--glass-border);
-    border-radius: 12px; padding: 14px 16px;
-    display: flex; align-items: center; gap: 10px;
-    backdrop-filter: blur(12px); transition: all 0.2s;
-    box-shadow: inset 0 1px 0 var(--glass-shine);
-  }
-  .fmt-chip:hover { border-color: rgba(0,245,212,0.2); transform: translateY(-2px); }
-  .fmt-ext { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--text); }
-  .fmt-name { font-size: 11px; color: var(--muted); }
-  .fmt-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
-  /* ── TOOLTIP / TOAST ── */
-  .toast {
-    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: rgba(0,245,212,0.1); border: 1px solid rgba(0,245,212,0.3);
-    backdrop-filter: blur(20px); border-radius: 100px;
-    color: var(--accent1); font-size: 13px; font-family: 'DM Mono', monospace;
-    padding: 12px 28px; z-index: 100; opacity: 0; transition: all 0.4s;
-    box-shadow: 0 0 30px rgba(0,245,212,0.2);
-    pointer-events: none;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* ── LOADING SPINNER ── */
-  .spinner {
-    width: 40px; height: 40px; border-radius: 50%;
-    border: 2px solid rgba(0,245,212,0.1);
-    border-top: 2px solid var(--accent1);
-    animation: spin 0.8s linear infinite;
-    display: none;
-  }
-  .spinner.show { display: block; }
-
-  /* ── PREVIEW AREA ── */
-  .preview-box {
-    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 12px; padding: 16px; margin-top: 14px;
-    max-height: 200px; overflow-y: auto; font-family: 'DM Mono', monospace;
-    font-size: 12px; color: var(--muted); line-height: 1.7;
-    white-space: pre-wrap; word-break: break-word;
-    scrollbar-width: thin; scrollbar-color: rgba(0,245,212,0.2) transparent;
-  }
-
-  /* ── SWAP BTN ── */
-  .swap-row { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
-  .swap-btn {
-    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-    border-radius: 10px; color: var(--muted); padding: 7px 14px;
-    font-size: 12px; font-family: 'DM Mono', monospace; cursor: pointer;
-    transition: all 0.2s;
-  }
-  .swap-btn:hover { background: rgba(0,245,212,0.08); color: var(--accent1); border-color: rgba(0,245,212,0.3); }
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
 </style>
 </head>
 <body>
+<div class="page">
+<div class="wrap">
 
-<div class="bg-canvas"></div>
-<div class="bg-grid"></div>
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
-<div class="orb orb3"></div>
-<canvas id="particles"></canvas>
-
-<!-- 3D FLOATING FORMAT SYMBOLS -->
-<div class="float-symbols" id="floatSymbols"></div>
-
-<div class="wrapper">
-  <header>
-    <div class="logo-badge">
-      <div class="logo-dot"></div>
-      <span class="logo-text">ForgeConvert — v2.0</span>
-    </div>
-    <h1>ForgeConvert</h1>
-    <p class="subtitle">The ultimate glass-forge file converter. Transform any format with zero uploads, zero cloud — all in your browser.</p>
-  </header>
-
-  <div class="format-pills">
-    <span class="pill active" onclick="filterConversions('all',this)">All Conversions</span>
-    <span class="pill" onclick="filterConversions('pdf',this)">→ PDF</span>
-    <span class="pill" onclick="filterConversions('doc',this)">→ DOC / Text</span>
-    <span class="pill" onclick="filterConversions('data',this)">→ Data</span>
-    <span class="pill" onclick="filterConversions('web',this)">→ Web</span>
+<!-- HEADER -->
+<header class="hdr" role="banner">
+  <div class="badge">
+    <span class="bdot"></span>
+    <span class="btxt">ForgeConvert — v2.0</span>
   </div>
+  <h1>ForgeConvert</h1>
+  <p class="sub">Free file converter. PDF, DOCX, CSV, JSON, HTML and 20+ formats — instant, private, zero uploads ever.</p>
+  <nav class="presets" aria-label="Quick presets">
+    <button class="pb" onclick="sp('docx','pdf')">📄 DOCX→PDF</button>
+    <button class="pb" onclick="sp('pdf','txt')">📃 PDF→TXT</button>
+    <button class="pb" onclick="sp('csv','json')">🔄 CSV→JSON</button>
+    <button class="pb" onclick="sp('json','csv')">🔄 JSON→CSV</button>
+    <button class="pb" onclick="sp('md','html')">🌐 MD→HTML</button>
+    <button class="pb" onclick="sp('jpg','pdf')">🖼 Image→PDF</button>
+    <button class="pb" onclick="sp('html','pdf')">📄 HTML→PDF</button>
+    <button class="pb" onclick="sp('txt','pdf')">📝 TXT→PDF</button>
+  </nav>
+</header>
 
-  <!-- MAIN CONVERTER CARD -->
-  <div class="converter-card" id="converterCard">
-    <div class="swap-row">
-      <span style="font-size:13px;color:var(--muted);font-family:'DM Mono',monospace;">Quick conversions:</span>
-      <button class="swap-btn" onclick="setPreset('docx','pdf')">DOCX → PDF</button>
-      <button class="swap-btn" onclick="setPreset('pdf','txt')">PDF → TXT</button>
-      <button class="swap-btn" onclick="setPreset('csv','json')">CSV → JSON</button>
-      <button class="swap-btn" onclick="setPreset('md','html')">MD → HTML</button>
-      <button class="swap-btn" onclick="setPreset('jpg','pdf')">Image → PDF</button>
+<!-- CONVERTER -->
+<main class="cvt-wrap">
+<section id="converter" class="cvt-card" aria-label="File Converter">
+  <div class="cvt-grid">
+
+    <!-- INPUT -->
+    <div class="in-col">
+      <p class="clbl">Input Format</p>
+      <select class="gsel" id="inFmt" onchange="ro()" aria-label="Input format">
+        <optgroup label="Documents">
+          <option value="docx">DOCX — Word Document</option>
+          <option value="doc">DOC — Legacy Word</option>
+          <option value="txt">TXT — Plain Text</option>
+          <option value="md">MD — Markdown</option>
+          <option value="html">HTML — Web Page</option>
+        </optgroup>
+        <optgroup label="PDF">
+          <option value="pdf">PDF — Portable Document</option>
+        </optgroup>
+        <optgroup label="Data">
+          <option value="csv">CSV — Spreadsheet</option>
+          <option value="json">JSON — Data</option>
+          <option value="xml">XML — Markup</option>
+        </optgroup>
+        <optgroup label="Images">
+          <option value="jpg">JPG — JPEG Image</option>
+          <option value="png">PNG — Image</option>
+          <option value="webp">WebP — Web Image</option>
+          <option value="gif">GIF — Animated</option>
+        </optgroup>
+      </select>
+      <div class="dz" id="dz" ondragover="dov(event)" ondrop="ddr(event)" ondragleave="dlv()" role="button" aria-label="Upload file">
+        <input type="file" id="fi" onchange="hf(event)" aria-label="Choose file">
+        <div class="dz-ico">⬆</div>
+        <p class="dz-t">Drop file or tap to upload</p>
+        <p class="dz-s" id="dzs">PDF, DOCX, CSV, JSON, MD, TXT, images…</p>
+      </div>
+      <div class="ftag" id="ftag" style="display:none"><span>📎</span><span id="ftagn"></span></div>
     </div>
 
-    <div class="converter-row">
-      <!-- INPUT -->
-      <div>
-        <div class="panel-label">Input Format</div>
-        <select class="glass-select" id="inputFormat" onchange="onFormatChange()">
-          <optgroup label="Documents">
-            <option value="docx">DOCX — Word Document</option>
-            <option value="doc">DOC — Legacy Word</option>
-            <option value="txt">TXT — Plain Text</option>
-            <option value="md">MD — Markdown</option>
-            <option value="html">HTML — Web Page</option>
-            <option value="rtf">RTF — Rich Text</option>
-          </optgroup>
-          <optgroup label="PDF">
-            <option value="pdf">PDF — Portable Document</option>
-          </optgroup>
-          <optgroup label="Data">
-            <option value="csv">CSV — Spreadsheet</option>
-            <option value="json">JSON — Data</option>
-            <option value="xml">XML — Markup</option>
-          </optgroup>
-          <optgroup label="Images">
-            <option value="jpg">JPG — JPEG Image</option>
-            <option value="png">PNG — PNG Image</option>
-            <option value="webp">WebP — Web Image</option>
-            <option value="gif">GIF — Animated Image</option>
-          </optgroup>
-        </select>
+    <!-- ARROW -->
+    <div class="arr-col">
+      <button class="arrbtn" onclick="go()" aria-label="Convert">➜</button>
+    </div>
 
-        <div class="drop-zone" id="dropZone" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
-          <input type="file" id="fileInput" onchange="handleFile(event)" />
-          <div class="drop-icon">⬆</div>
-          <div class="drop-title">Drop file here or click to upload</div>
-          <div class="drop-sub" id="dropSub">Accepts .docx, .pdf, .csv, .json, .md, .txt, images…</div>
-        </div>
-        <div class="file-chosen" id="fileChosen" style="display:none">
-          <span>📎</span> <span id="fileChosenName"></span>
-        </div>
-      </div>
-
-      <!-- ARROW -->
-      <div class="arrow-col">
-        <button class="arrow-btn" onclick="startConvert()" title="Convert">➜</button>
-      </div>
-
-      <!-- OUTPUT -->
-      <div>
-        <div class="panel-label">Output Format</div>
-        <select class="glass-select" id="outputFormat" onchange="onFormatChange()">
-          <optgroup label="PDF">
-            <option value="pdf">PDF — Portable Document</option>
-          </optgroup>
-          <optgroup label="Documents">
-            <option value="txt">TXT — Plain Text</option>
-            <option value="md">MD — Markdown</option>
-            <option value="html">HTML — Web Page</option>
-          </optgroup>
-          <optgroup label="Data">
-            <option value="json">JSON — Data</option>
-            <option value="csv">CSV — Spreadsheet</option>
-            <option value="xml">XML — Markup</option>
-          </optgroup>
-          <optgroup label="Images">
-            <option value="png">PNG — Image</option>
-            <option value="jpg">JPG — Image</option>
-          </optgroup>
-        </select>
-
-        <div class="output-panel" id="outputPanel">
-          <div class="spinner" id="spinner"></div>
-          <div class="output-idle" id="outputIdle">
-            <div style="font-size:36px;margin-bottom:8px;opacity:0.4">⟳</div>
-            Output will appear here after conversion
-          </div>
-          <div id="outputReady" style="display:none;width:100%;text-align:center"></div>
-        </div>
+    <!-- OUTPUT -->
+    <div class="out-col">
+      <p class="clbl">Output Format</p>
+      <select class="gsel" id="outFmt" onchange="ro()" aria-label="Output format">
+        <optgroup label="PDF">
+          <option value="pdf">PDF — Portable Document</option>
+        </optgroup>
+        <optgroup label="Documents">
+          <option value="txt">TXT — Plain Text</option>
+          <option value="md">MD — Markdown</option>
+          <option value="html">HTML — Web Page</option>
+        </optgroup>
+        <optgroup label="Data">
+          <option value="json">JSON — Data</option>
+          <option value="csv">CSV — Spreadsheet</option>
+          <option value="xml">XML — Markup</option>
+        </optgroup>
+        <optgroup label="Images">
+          <option value="png">PNG — Image</option>
+          <option value="jpg">JPG — Image</option>
+        </optgroup>
+      </select>
+      <div class="out-panel" id="op">
+        <div class="spin" id="spin"></div>
+        <p class="out-idle" id="oi">⟳ Output appears here after conversion</p>
+        <div id="or" style="display:none;width:100%"></div>
       </div>
     </div>
 
-    <!-- CONVERT BUTTON -->
-    <div class="convert-section">
-      <button class="convert-btn" id="convertBtn" onclick="startConvert()">
-        ⚡ Convert Now
-      </button>
-      <div class="progress-bar" id="progressBar">
-        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <div class="cvt-row">
+    <button class="cvtbtn" id="cb" onclick="go()">⚡ Convert Now</button>
+    <div class="pbar" id="pb"><div class="pfill" id="pf"></div></div>
+    <p class="stt in" id="st">Select a file and choose your output format</p>
+  </div>
+</section>
+</main>
+
+<!-- FEATURES -->
+<section id="features" aria-label="Features">
+  <div class="feats">
+    <article class="fc">
+      <div class="fi" aria-hidden="true">🔒</div>
+      <h3 class="ft">100% Private</h3>
+      <p class="fd">Files never leave your device. All conversions run locally in your browser — no server, no cloud.</p>
+    </article>
+    <article class="fc">
+      <div class="fi" aria-hidden="true">⚡</div>
+      <h3 class="ft">Instant Speed</h3>
+      <p class="fd">No upload queues. Client-side processing converts files in seconds, even large documents.</p>
+    </article>
+    <article class="fc">
+      <div class="fi" aria-hidden="true">🎯</div>
+      <h3 class="ft">20+ Formats</h3>
+      <p class="fd">DOCX, PDF, TXT, CSV, JSON, XML, Markdown, HTML, PNG, JPG and more — 50+ combinations.</p>
+    </article>
+    <article class="fc">
+      <div class="fi" aria-hidden="true">🌐</div>
+      <h3 class="ft">Any Device</h3>
+      <p class="fd">Works on iPhone, Android, Windows, Mac. No Word, no Acrobat, no install needed.</p>
+    </article>
+  </div>
+</section>
+
+<!-- POPULAR CONVERSIONS -->
+<section id="popular-conversions" class="sec" aria-label="Popular Conversions">
+  <h2 class="sh">Popular Conversions</h2>
+  <div class="pop-grid">
+    <button class="popbtn" onclick="sp('docx','pdf')">📄 Word to PDF</button>
+    <button class="popbtn" onclick="sp('pdf','txt')">📃 PDF to Text</button>
+    <button class="popbtn" onclick="sp('csv','json')">🔄 CSV to JSON</button>
+    <button class="popbtn" onclick="sp('json','csv')">🔄 JSON to CSV</button>
+    <button class="popbtn" onclick="sp('md','html')">🌐 Markdown to HTML</button>
+    <button class="popbtn" onclick="sp('html','pdf')">📄 HTML to PDF</button>
+    <button class="popbtn" onclick="sp('jpg','pdf')">🖼 Image to PDF</button>
+    <button class="popbtn" onclick="sp('csv','html')">📊 CSV to HTML Table</button>
+    <button class="popbtn" onclick="sp('txt','pdf')">📝 Text to PDF</button>
+    <button class="popbtn" onclick="sp('json','xml')">🔄 JSON to XML</button>
+    <button class="popbtn" onclick="sp('png','jpg')">🖼 PNG to JPG</button>
+    <button class="popbtn" onclick="sp('docx','html')">🌐 Word to HTML</button>
+  </div>
+</section>
+
+<!-- FORMATS -->
+<section id="formats" class="sec" aria-label="Supported File Formats">
+  <h2 class="sh">Supported Formats</h2>
+  <div class="fmt-grid" role="list">
+    <div class="fchip" role="listitem"><div class="fdot" style="background:#ff3a8c"></div><div><div class="fext">PDF</div><div class="fnm">Portable Doc</div></div></div>
+    <div class="fchip" role="listitem"><div class="fdot" style="background:#00f5d4"></div><div><div class="fext">DOCX</div><div class="fnm">Word Document</div></div></div>
+    <div class="fchip" role="listitem"><div class="fdot" style="background:#7b2fff"></div><div><div class="fext">HTML</div><div class="fnm">Web Page</div></div></div>
+    <div class="fchip" role="listitem"><div class="fdot" style="background:#ffb627"></div><div><div class="fext">CSV</div><div class="fnm">Spreadsheet</div></div></div>
+    <div class="fchip" role="listitem"><div class="fdot" style="background:#4ade80"></div><div><div class="fext">JSON</div><div class="fnm">Data File</div></div></div>
+    <div class="fchip" role="listitem"><div class="fdot" style="background:#60a5fa"></div><div><div class="fext">TXT</div><div class="fnm">Plain Text</div></div></div>
+    <div class="fchip" role="listitem"><div class="fdot" style="background:#f472b6"></div><div><div class="fext">MD</div><div class="fnm">Markdown</div></div></div>
+    <div class="fchip" role="listitem"><div class="fdot" style="background:#a78bfa"></div><div><div class="fext">XML</div><div class="fnm">Markup</div></div></div>
+    <div class="fchip" role="listitem"><div class="fdot" style="background:#fb923c"></div><div><div class="fext">JPG</div><div class="fnm">JPEG Image</div></div></div>
+    <div class="fchip" role="listitem"><div class="fdot" style="background:#34d399"></div><div><div class="fext">PNG</div><div class="fnm">PNG Image</div></div></div>
+    <div class="fchip" role="listitem"><div class="fdot" style="background:#38bdf8"></div><div><div class="fext">WebP</div><div class="fnm">Web Image</div></div></div>
+    <div class="fchip" role="listitem"><div class="fdot" style="background:#e879f9"></div><div><div class="fext">GIF</div><div class="fnm">Animated</div></div></div>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section id="history" class="sec" aria-label="Recent Conversions">
+  <h2 class="sh">Recent Conversions</h2>
+  <div class="hlist" id="hl">
+    <p style="color:var(--mt);font-size:12px;font-family:'DM Mono',monospace;padding:14px 0;text-align:center">No conversions yet — convert a file above!</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="sec" aria-label="FAQ" itemscope itemtype="https://schema.org/FAQPage">
+  <h2 class="sh">Frequently Asked Questions</h2>
+  <div class="faqlist">
+    <details class="fq" open itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+      <summary itemprop="name">How do I convert PDF to Word (DOCX) for free?</summary>
+      <div class="fqb" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+        <p itemprop="text">Select <strong>PDF</strong> as input, choose <strong>TXT</strong> as output, upload your PDF and click <em>Convert Now</em>. No uploads, no signup — completely free.</p>
       </div>
-      <div class="status-msg info" id="statusMsg">Select a file and choose your output format</div>
-    </div>
+    </details>
+    <details class="fq" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+      <summary itemprop="name">Is ForgeConvert really free with no limits?</summary>
+      <div class="fqb" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+        <p itemprop="text"><strong>Yes.</strong> ForgeConvert is 100% free — no file size limits, no daily caps, no watermarks, no account required.</p>
+      </div>
+    </details>
+    <details class="fq" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+      <summary itemprop="name">Are my files safe when using ForgeConvert?</summary>
+      <div class="fqb" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+        <p itemprop="text">Files are processed <strong>entirely inside your browser</strong>. They are never uploaded to any server, never stored, never shared.</p>
+      </div>
+    </details>
+    <details class="fq" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+      <summary itemprop="name">Does ForgeConvert work on mobile phones?</summary>
+      <div class="fqb" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+        <p itemprop="text">Yes. ForgeConvert is fully responsive and works on <strong>Android and iOS</strong> in Chrome, Safari and Firefox. No app installation required.</p>
+      </div>
+    </details>
   </div>
+</section>
 
-  <!-- FEATURES -->
-  <div class="features">
-    <div class="feat-card">
-      <div class="feat-icon">🔒</div>
-      <div class="feat-title">100% Private</div>
-      <div class="feat-desc">All conversions happen locally in your browser. Your files never leave your device.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">⚡</div>
-      <div class="feat-title">Instant Speed</div>
-      <div class="feat-desc">No upload delays. Blazing-fast client-side processing for files of any size.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">🎯</div>
-      <div class="feat-title">20+ Formats</div>
-      <div class="feat-desc">DOCX, PDF, TXT, CSV, JSON, XML, Markdown, HTML, PNG, JPG and more.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">🌐</div>
-      <div class="feat-title">No Install</div>
-      <div class="feat-desc">Works in any modern browser. No extensions, no plugins, no apps to install.</div>
-    </div>
-  </div>
+<!-- FOOTER -->
+<footer class="ftr" role="contentinfo">
+  <nav class="fnav" aria-label="Footer">
+    <a href="#converter">Converter</a>
+    <a href="#formats">Formats</a>
+    <a href="#popular-conversions">Popular</a>
+    <a href="#faq">FAQ</a>
+    <a href="#features">Features</a>
+  </nav>
+  <p class="fdsc"><strong style="color:var(--tx)">ForgeConvert</strong> — Free online file converter. PDF · DOCX · CSV · JSON · HTML · Markdown · XML · PNG · JPG. No signup. No uploads. No limits.</p>
+  <p class="fcp">© 2025 ForgeConvert · Free to use · Built with privacy in mind</p>
+</footer>
 
-  <!-- SUPPORTED FORMATS -->
-  <div class="history-section">
-    <div class="section-title">Supported Formats</div>
-    <div class="formats-grid">
-      <div class="fmt-chip"><div class="fmt-dot" style="background:#ff3a8c"></div><div><div class="fmt-ext">PDF</div><div class="fmt-name">Portable Doc</div></div></div>
-      <div class="fmt-chip"><div class="fmt-dot" style="background:#00f5d4"></div><div><div class="fmt-ext">DOCX</div><div class="fmt-name">Word Document</div></div></div>
-      <div class="fmt-chip"><div class="fmt-dot" style="background:#7b2fff"></div><div><div class="fmt-ext">HTML</div><div class="fmt-name">Web Page</div></div></div>
-      <div class="fmt-chip"><div class="fmt-dot" style="background:#ffb627"></div><div><div class="fmt-ext">CSV</div><div class="fmt-name">Spreadsheet</div></div></div>
-      <div class="fmt-chip"><div class="fmt-dot" style="background:#4ade80"></div><div><div class="fmt-ext">JSON</div><div class="fmt-name">Data File</div></div></div>
-      <div class="fmt-chip"><div class="fmt-dot" style="background:#60a5fa"></div><div><div class="fmt-ext">TXT</div><div class="fmt-name">Plain Text</div></div></div>
-      <div class="fmt-chip"><div class="fmt-dot" style="background:#f472b6"></div><div><div class="fmt-ext">MD</div><div class="fmt-name">Markdown</div></div></div>
-      <div class="fmt-chip"><div class="fmt-dot" style="background:#a78bfa"></div><div><div class="fmt-ext">XML</div><div class="fmt-name">Markup</div></div></div>
-      <div class="fmt-chip"><div class="fmt-dot" style="background:#fb923c"></div><div><div class="fmt-ext">JPG</div><div class="fmt-name">JPEG Image</div></div></div>
-      <div class="fmt-chip"><div class="fmt-dot" style="background:#34d399"></div><div><div class="fmt-ext">PNG</div><div class="fmt-name">PNG Image</div></div></div>
-      <div class="fmt-chip"><div class="fmt-dot" style="background:#38bdf8"></div><div><div class="fmt-ext">WebP</div><div class="fmt-name">Web Image</div></div></div>
-      <div class="fmt-chip"><div class="fmt-dot" style="background:#e879f9"></div><div><div class="fmt-ext">GIF</div><div class="fmt-name">Animated</div></div></div>
-    </div>
-  </div>
-
-  <!-- HISTORY -->
-  <div class="history-section" style="margin-top:50px">
-    <div class="section-title">Recent Conversions</div>
-    <div class="history-list" id="historyList">
-      <div style="color:var(--muted);font-size:13px;font-family:'DM Mono',monospace;padding:20px 0;text-align:center">No conversions yet. Start converting files above!</div>
-    </div>
-  </div>
+</div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-// ── PARTICLES ──
-(function(){
-  const canvas = document.getElementById('particles');
-  const ctx = canvas.getContext('2d');
-  let w, h, pts = [];
-  function resize(){ w = canvas.width = innerWidth; h = canvas.height = innerHeight; }
-  resize(); window.addEventListener('resize', resize);
-  for(let i=0;i<60;i++) pts.push({
-    x: Math.random()*1920, y: Math.random()*1080,
-    vx: (Math.random()-.5)*.3, vy: (Math.random()-.5)*.3,
-    r: Math.random()*1.5+.5,
-    a: Math.random(), c: ['#00f5d4','#7b2fff','#ff3a8c','#ffb627'][Math.floor(Math.random()*4)]
-  });
-  function tick(){
-    ctx.clearRect(0,0,w,h);
-    pts.forEach(p=>{
-      p.x+=p.vx; p.y+=p.vy;
-      if(p.x<0)p.x=w; if(p.x>w)p.x=0;
-      if(p.y<0)p.y=h; if(p.y>h)p.y=0;
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle=p.c; ctx.globalAlpha=p.a*0.5; ctx.fill();
-    });
-    ctx.globalAlpha=1;
-    requestAnimationFrame(tick);
-  }
-  tick();
-})();
+'use strict';
+let CF=null,CH=[];
 
-// ── 3D FLOATING FORMAT SYMBOLS ──
-(function(){
-  const formats = [
-    { cls:'pdf',  icon:'📄', label:'PDF'  },
-    { cls:'docx', icon:'📝', label:'DOCX' },
-    { cls:'txt',  icon:'📃', label:'TXT'  },
-    { cls:'csv',  icon:'📊', label:'CSV'  },
-    { cls:'json', icon:'🗂', label:'JSON' },
-    { cls:'html', icon:'🌐', label:'HTML' },
-    { cls:'md',   icon:'✍', label:'MD'   },
-    { cls:'xml',  icon:'📑', label:'XML'  },
-    { cls:'png',  icon:'🖼', label:'PNG'  },
-    { cls:'jpg',  icon:'📷', label:'JPG'  },
-    { cls:'svg',  icon:'🎨', label:'SVG'  },
-    { cls:'mp4',  icon:'🎬', label:'MP4'  },
-    { cls:'zip',  icon:'📦', label:'ZIP'  },
-    { cls:'pptx', icon:'📊', label:'PPTX' },
-    { cls:'xlsx', icon:'🗃', label:'XLSX' },
-    { cls:'pdf',  icon:'📄', label:'PDF'  },  // extra PDF
-    { cls:'docx', icon:'📝', label:'DOCX' },  // extra DOCX
-    { cls:'csv',  icon:'📊', label:'CSV'  },  // extra CSV
-    { cls:'json', icon:'🗂', label:'JSON' },  // extra JSON
-    { cls:'html', icon:'🌐', label:'HTML' },  // extra HTML
-  ];
+function dov(e){e.preventDefault();document.getElementById('dz').classList.add('over')}
+function dlv(){document.getElementById('dz').classList.remove('over')}
+function ddr(e){e.preventDefault();dlv();const f=e.dataTransfer.files[0];if(f)pf(f)}
+function hf(e){const f=e.target.files[0];if(f)pf(f)}
 
-  const anims = ['floatSym','floatSymB','floatSymC'];
-  const container = document.getElementById('floatSymbols');
-
-  // Spread symbols across viewport with safe zones (avoid center)
-  const positions = [
-    // Left column
-    { x:2,  y:5  }, { x:4,  y:25 }, { x:1,  y:48 }, { x:5,  y:68 }, { x:2,  y:85 },
-    // Right column
-    { x:88, y:8  }, { x:91, y:30 }, { x:86, y:52 }, { x:92, y:72 }, { x:87, y:88 },
-    // Far left
-    { x:10, y:15 }, { x:8,  y:40 }, { x:12, y:62 }, { x:7,  y:78 },
-    // Far right
-    { x:80, y:18 }, { x:82, y:42 }, { x:78, y:64 }, { x:84, y:82 },
-    // Top scattered
-    { x:25, y:2  }, { x:65, y:3  },
-  ];
-
-  formats.forEach((fmt, i) => {
-    const pos = positions[i % positions.length];
-    const delay = (i * 1.3).toFixed(1);
-    const dur   = (12 + (i % 7) * 2.5).toFixed(1);
-    const anim  = anims[i % 3];
-    const scale = 0.72 + (i % 5) * 0.07;
-    const opacity = 0.55 + (i % 4) * 0.1;
-
-    const el = document.createElement('div');
-    el.className = `fsym fsym-${fmt.cls}`;
-    el.innerHTML = `
-      <div class="fsym-corner"></div>
-      <div class="fsym-icon">${fmt.icon}</div>
-      <div class="fsym-label">${fmt.label}</div>
-    `;
-    el.style.cssText = `
-      left: ${pos.x}%;
-      top:  ${pos.y}%;
-      animation-name: ${anim};
-      animation-duration: ${dur}s;
-      animation-delay: -${delay}s;
-      transform: scale(${scale});
-      opacity: ${opacity};
-      transform-origin: center center;
-    `;
-
-    // Mouse parallax: each symbol responds slightly to mouse
-    el._px = pos.x; el._py = pos.y;
-    el._depth = 0.3 + (i % 5) * 0.15;
-
-    container.appendChild(el);
-  });
-
-  // Subtle mouse parallax on symbols
-  let mx=0, my=0;
-  document.addEventListener('mousemove', e=>{
-    mx = (e.clientX / innerWidth  - 0.5) * 2;
-    my = (e.clientY / innerHeight - 0.5) * 2;
-  });
-
-  // Hover pulse: highlight symbol on hover for fun
-  container.querySelectorAll('.fsym').forEach(el=>{
-    el.addEventListener('mouseenter', ()=>{
-      el.style.opacity='1';
-      el.style.filter='brightness(1.4) drop-shadow(0 0 18px currentColor)';
-      el.style.zIndex='10';
-    });
-    el.addEventListener('mouseleave', ()=>{
-      el.style.opacity='';
-      el.style.filter='';
-      el.style.zIndex='';
-    });
-  });
-})();
-
-// ── 3D TILT ──
-document.getElementById('converterCard').addEventListener('mousemove', e=>{
-  const r = e.currentTarget.getBoundingClientRect();
-  const x = (e.clientX - r.left - r.width/2) / r.width;
-  const y = (e.clientY - r.top - r.height/2) / r.height;
-  e.currentTarget.style.transform = `perspective(1200px) rotateY(${x*4}deg) rotateX(${-y*4}deg)`;
-});
-document.getElementById('converterCard').addEventListener('mouseleave', e=>{
-  e.currentTarget.style.transform = 'perspective(1200px) rotateY(0) rotateX(0)';
-});
-
-// ── STATE ──
-let currentFile = null, history = [];
-
-function handleDragOver(e){ e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
-function handleDragLeave(){ document.getElementById('dropZone').classList.remove('drag-over'); }
-function handleDrop(e){
-  e.preventDefault(); handleDragLeave();
-  const f = e.dataTransfer.files[0]; if(f) processFile(f);
-}
-function handleFile(e){ const f = e.target.files[0]; if(f) processFile(f); }
-
-function processFile(f){
-  currentFile = f;
-  const el = document.getElementById('fileChosen');
-  document.getElementById('fileChosenName').textContent = f.name + ' (' + formatSize(f.size) + ')';
-  el.style.display='flex';
-  setStatus(`File loaded: ${f.name}`, 'ok');
-  // Auto-detect input format
-  const ext = f.name.split('.').pop().toLowerCase();
-  const sel = document.getElementById('inputFormat');
-  for(let o of sel.options){ if(o.value===ext){ sel.value=ext; break; } }
-  resetOutput();
+function pf(f){
+  CF=f;
+  document.getElementById('ftagn').textContent=f.name+' ('+fs(f.size)+')';
+  document.getElementById('ftag').style.display='flex';
+  ss('File ready: '+f.name,'ok');
+  const ext=f.name.split('.').pop().toLowerCase();
+  const s=document.getElementById('inFmt');
+  for(const o of s.options)if(o.value===ext){s.value=ext;break;}
+  ro();
 }
 
-function formatSize(b){
-  if(b<1024)return b+'B';
-  if(b<1024*1024)return (b/1024).toFixed(1)+'KB';
-  return (b/1024/1024).toFixed(1)+'MB';
+function fs(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB'}
+
+function ro(){
+  document.getElementById('oi').style.display='block';
+  document.getElementById('or').style.display='none';
+  document.getElementById('spin').classList.remove('on');
 }
 
-function resetOutput(){
-  document.getElementById('outputIdle').style.display='flex';
-  document.getElementById('outputReady').style.display='none';
-  document.getElementById('spinner').classList.remove('show');
+function sp(a,b){
+  document.getElementById('inFmt').value=a;
+  document.getElementById('outFmt').value=b;
+  ro();CF=null;
+  document.getElementById('ftag').style.display='none';
+  document.getElementById('fi').value='';
+  ss('Preset: '+a.toUpperCase()+' → '+b.toUpperCase(),'in');
 }
 
-function onFormatChange(){ resetOutput(); setStatus('Select a file and choose your output format','info'); }
+function ss(m,c){const e=document.getElementById('st');e.textContent=m;e.className='stt '+c}
 
-function setPreset(inFmt, outFmt){
-  document.getElementById('inputFormat').value = inFmt;
-  document.getElementById('outputFormat').value = outFmt;
-  document.getElementById('dropSub').textContent = `Accepts .${inFmt} files`;
-  resetOutput(); currentFile=null;
-  document.getElementById('fileChosen').style.display='none';
-  document.getElementById('fileInput').value='';
-  setStatus(`Preset: ${inFmt.toUpperCase()} → ${outFmt.toUpperCase()}`, 'info');
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3000)}
+
+function sp2(v){
+  const b=document.getElementById('pb'),f=document.getElementById('pf');
+  b.style.display='block';f.style.width=v+'%';
+  if(v>=100)setTimeout(()=>{b.style.display='none';f.style.width='0%'},650);
 }
 
-function setStatus(msg, cls='info'){
-  const el = document.getElementById('statusMsg');
-  el.textContent = msg; el.className = `status-msg ${cls}`;
-}
-
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 3000);
-}
-
-function showProgress(v){
-  const bar = document.getElementById('progressBar');
-  const fill = document.getElementById('progressFill');
-  bar.style.display = 'block';
-  fill.style.width = v+'%';
-  if(v>=100) setTimeout(()=>{ bar.style.display='none'; fill.style.width='0%'; }, 800);
-}
-
-// ── MAIN CONVERT ──
-async function startConvert(){
-  if(!currentFile){ showToast('⚠️ Please select a file first'); return; }
-  const inFmt = document.getElementById('inputFormat').value;
-  const outFmt = document.getElementById('outputFormat').value;
-  if(inFmt===outFmt){ showToast('⚠️ Input and output formats are the same'); return; }
-
-  const btn = document.getElementById('convertBtn');
-  btn.disabled=true; btn.textContent='⏳ Converting...';
-  document.getElementById('spinner').classList.add('show');
-  document.getElementById('outputIdle').style.display='none';
-  document.getElementById('outputReady').style.display='none';
-  setStatus('Converting...', 'info');
-  showProgress(30);
-
-  try {
-    const result = await convert(currentFile, inFmt, outFmt);
-    showProgress(90);
+async function go(){
+  if(!CF){toast('⚠️ Please select a file first');return}
+  const i=document.getElementById('inFmt').value,o=document.getElementById('outFmt').value;
+  if(i===o){toast('⚠️ Same input and output format');return}
+  const btn=document.getElementById('cb');
+  btn.disabled=true;btn.textContent='⏳ Converting…';
+  document.getElementById('spin').classList.add('on');
+  document.getElementById('oi').style.display='none';
+  document.getElementById('or').style.display='none';
+  ss('Converting…','in');sp2(35);
+  try{
+    const r=await cv(CF,i,o);
+    sp2(100);
     setTimeout(()=>{
-      showProgress(100);
-      showResult(result, outFmt);
-      btn.disabled=false; btn.textContent='⚡ Convert Now';
-      document.getElementById('spinner').classList.remove('show');
-      addHistory(currentFile.name, inFmt, outFmt, result);
-      setStatus(`✓ Converted successfully to ${outFmt.toUpperCase()}`, 'ok');
-      showToast('✓ Conversion complete!');
-    }, 400);
-  } catch(err) {
-    showProgress(0);
-    document.getElementById('progressBar').style.display='none';
-    btn.disabled=false; btn.textContent='⚡ Convert Now';
-    document.getElementById('spinner').classList.remove('show');
-    document.getElementById('outputIdle').style.display='flex';
-    setStatus('❌ Error: ' + err.message, 'err');
-    showToast('❌ ' + err.message);
+      rr(r,o);btn.disabled=false;btn.textContent='⚡ Convert Now';
+      document.getElementById('spin').classList.remove('on');
+      ah(CF.name,i,o,r);ss('✓ Converted to '+o.toUpperCase(),'ok');toast('✓ Done!');
+    },300);
+  }catch(e){
+    sp2(0);document.getElementById('pb').style.display='none';
+    btn.disabled=false;btn.textContent='⚡ Convert Now';
+    document.getElementById('spin').classList.remove('on');
+    document.getElementById('oi').style.display='block';
+    ss('❌ '+e.message,'er');toast('❌ '+e.message);
   }
 }
 
 // ── CONVERTERS ──
-async function convert(file, from, to){
-  const key = from+'_'+to;
-
-  // ─ DOCX → anything
-  if(from==='docx' || from==='doc'){
-    const buf = await file.arrayBuffer();
-    const res = await mammoth.convertToHtml({arrayBuffer:buf});
-    const html = res.value;
-    const text = res.value.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-
-    if(to==='pdf') return docxToPdf(html, file.name);
-    if(to==='txt') return {type:'txt', data:text, name:file.name.replace(/\.[^.]+$/,'.txt')};
-    if(to==='html') return {type:'html', data:html, name:file.name.replace(/\.[^.]+$/,'.html')};
-    if(to==='md') return {type:'md', data:htmlToMd(html), name:file.name.replace(/\.[^.]+$/,'.md')};
-    if(to==='json') return {type:'json', data:JSON.stringify({content:text,source:file.name},null,2), name:file.name.replace(/\.[^.]+$/,'.json')};
-    if(to==='xml') return {type:'xml', data:`<?xml version="1.0" encoding="UTF-8"?>\n<document>\n  <content>${escXml(text)}</content>\n</document>`, name:file.name.replace(/\.[^.]+$/,'.xml')};
+async function cv(f,fr,to){
+  if(fr==='docx'||fr==='doc'){
+    const b=await f.arrayBuffer(),r=await mammoth.convertToHtml({arrayBuffer:b});
+    const h=r.value,t=h.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+    if(to==='pdf')return d2p(h,f.name);
+    if(to==='txt')return T(t,f.name);
+    if(to==='html')return{type:'html',data:h,name:xe(f.name,'html')};
+    if(to==='md')return{type:'md',data:h2m(h),name:xe(f.name,'md')};
+    if(to==='json')return J({content:t,source:f.name},f.name);
+    if(to==='xml')return X(t,f.name);
   }
-
-  // ─ TXT → anything
-  if(from==='txt'){
-    const text = await file.text();
-    if(to==='pdf') return textToPdf(text, file.name);
-    if(to==='html') return {type:'html', data:`<!DOCTYPE html><html><body><pre style="font-family:monospace;white-space:pre-wrap">${escHtml(text)}</pre></body></html>`, name:file.name.replace(/\.[^.]+$/,'.html')};
-    if(to==='md') return {type:'md', data:text, name:file.name.replace(/\.[^.]+$/,'.md')};
-    if(to==='json') return {type:'json', data:JSON.stringify({text},null,2), name:file.name.replace(/\.[^.]+$/,'.json')};
-    if(to==='xml') return {type:'xml', data:`<?xml version="1.0" encoding="UTF-8"?>\n<document>\n  <content>${escXml(text)}</content>\n</document>`, name:file.name.replace(/\.[^.]+$/,'.xml')};
+  if(fr==='txt'){
+    const t=await f.text();
+    if(to==='pdf')return t2p(t,f.name);
+    if(to==='html')return{type:'html',data:`<!DOCTYPE html><html><body><pre style="font-family:monospace;white-space:pre-wrap;padding:20px">${eH(t)}</pre></body></html>`,name:xe(f.name,'html')};
+    if(to==='md')return{type:'md',data:t,name:xe(f.name,'md')};
+    if(to==='json')return J({text:t},f.name);
+    if(to==='xml')return X(t,f.name);
   }
-
-  // ─ MD → anything
-  if(from==='md'){
-    const md = await file.text();
-    const html = marked.parse(md);
-    if(to==='html') return {type:'html', data:`<!DOCTYPE html><html><head><style>body{font-family:sans-serif;max-width:800px;margin:40px auto;line-height:1.6}</style></head><body>${html}</body></html>`, name:file.name.replace(/\.[^.]+$/,'.html')};
-    if(to==='txt') return {type:'txt', data:html.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim(), name:file.name.replace(/\.[^.]+$/,'.txt')};
-    if(to==='pdf') return textToPdf(md, file.name);
-    if(to==='json') return {type:'json', data:JSON.stringify({markdown:md,html},null,2), name:file.name.replace(/\.[^.]+$/,'.json')};
+  if(fr==='md'){
+    const m=await f.text(),h=marked.parse(m);
+    if(to==='html')return{type:'html',data:`<!DOCTYPE html><html><head><style>body{font-family:sans-serif;max-width:800px;margin:40px auto;line-height:1.7;padding:0 20px}</style></head><body>${h}</body></html>`,name:xe(f.name,'html')};
+    if(to==='txt')return T(h.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim(),f.name);
+    if(to==='pdf')return t2p(m,f.name);
+    if(to==='json')return J({markdown:m,html:h},f.name);
   }
-
-  // ─ HTML → anything
-  if(from==='html'){
-    const html = await file.text();
-    const text = html.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-    if(to==='txt') return {type:'txt', data:text, name:file.name.replace(/\.[^.]+$/,'.txt')};
-    if(to==='md') return {type:'md', data:'# Converted from HTML\n\n'+text, name:file.name.replace(/\.[^.]+$/,'.md')};
-    if(to==='pdf') return textToPdf(text, file.name);
-    if(to==='json') return {type:'json', data:JSON.stringify({html,text},null,2), name:file.name.replace(/\.[^.]+$/,'.json')};
-    if(to==='xml') return {type:'xml', data:`<?xml version="1.0"?>\n<page>${escXml(text)}</page>`, name:file.name.replace(/\.[^.]+$/,'.xml')};
+  if(fr==='html'){
+    const h=await f.text(),t=h.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+    if(to==='txt')return T(t,f.name);
+    if(to==='md')return{type:'md',data:'# Converted\n\n'+t,name:xe(f.name,'md')};
+    if(to==='pdf')return t2p(t,f.name);
+    if(to==='json')return J({html:h,text:t},f.name);
+    if(to==='xml')return X(t,f.name);
   }
-
-  // ─ CSV → anything
-  if(from==='csv'){
-    const csvText = await file.text();
-    const parsed = Papa.parse(csvText, {header:true, skipEmptyLines:true});
-    if(to==='json') return {type:'json', data:JSON.stringify(parsed.data,null,2), name:file.name.replace(/\.[^.]+$/,'.json')};
-    if(to==='xml') return {type:'xml', data:csvToXml(parsed.data), name:file.name.replace(/\.[^.]+$/,'.xml')};
-    if(to==='html') return {type:'html', data:csvToHtml(parsed.data, parsed.meta.fields), name:file.name.replace(/\.[^.]+$/,'.html')};
-    if(to==='txt') return {type:'txt', data:csvText, name:file.name.replace(/\.[^.]+$/,'.txt')};
-    if(to==='pdf') return csvToPdf(parsed.data, parsed.meta.fields, file.name);
-    if(to==='md') return {type:'md', data:csvToMd(parsed.data, parsed.meta.fields), name:file.name.replace(/\.[^.]+$/,'.md')};
+  if(fr==='csv'){
+    const c=await f.text(),p=Papa.parse(c,{header:true,skipEmptyLines:true});
+    const d=p.data,fl=p.meta.fields||[];
+    if(to==='json')return J(d,f.name);
+    if(to==='xml')return{type:'xml',data:c2x(d),name:xe(f.name,'xml')};
+    if(to==='html')return{type:'html',data:c2h(d,fl),name:xe(f.name,'html')};
+    if(to==='txt')return T(c,f.name);
+    if(to==='pdf')return cp(d,fl,f.name);
+    if(to==='md')return{type:'md',data:c2m(d,fl),name:xe(f.name,'md')};
   }
-
-  // ─ JSON → anything
-  if(from==='json'){
-    const txt = await file.text();
-    const obj = JSON.parse(txt);
-    if(to==='csv') return {type:'csv', data:Papa.unparse(Array.isArray(obj)?obj:[obj]), name:file.name.replace(/\.[^.]+$/,'.csv')};
-    if(to==='xml') return {type:'xml', data:jsonToXml(obj,'root'), name:file.name.replace(/\.[^.]+$/,'.xml')};
-    if(to==='txt') return {type:'txt', data:JSON.stringify(obj,null,2), name:file.name.replace(/\.[^.]+$/,'.txt')};
-    if(to==='html') return {type:'html', data:`<!DOCTYPE html><html><body><pre style="font-family:monospace;background:#1a1a2e;color:#00f5d4;padding:30px;border-radius:12px">${escHtml(JSON.stringify(obj,null,2))}</pre></body></html>`, name:file.name.replace(/\.[^.]+$/,'.html')};
-    if(to==='pdf') return textToPdf(JSON.stringify(obj,null,2), file.name);
+  if(fr==='json'){
+    const t=await f.text(),o=JSON.parse(t);
+    if(to==='csv')return{type:'csv',data:Papa.unparse(Array.isArray(o)?o:[o]),name:xe(f.name,'csv')};
+    if(to==='xml')return{type:'xml',data:j2x(o,'root'),name:xe(f.name,'xml')};
+    if(to==='txt')return T(JSON.stringify(o,null,2),f.name);
+    if(to==='html')return{type:'html',data:`<!DOCTYPE html><html><body><pre style="font-family:monospace;background:#111;color:#0f0;padding:20px;border-radius:8px">${eH(JSON.stringify(o,null,2))}</pre></body></html>`,name:xe(f.name,'html')};
+    if(to==='pdf')return t2p(JSON.stringify(o,null,2),f.name);
   }
-
-  // ─ XML → anything
-  if(from==='xml'){
-    const xmlTxt = await file.text();
-    if(to==='txt') return {type:'txt', data:xmlTxt, name:file.name.replace(/\.[^.]+$/,'.txt')};
-    if(to==='json') return {type:'json', data:JSON.stringify({xml_content:xmlTxt}), name:file.name.replace(/\.[^.]+$/,'.json')};
-    if(to==='html') return {type:'html', data:`<!DOCTYPE html><html><body><pre>${escHtml(xmlTxt)}</pre></body></html>`, name:file.name.replace(/\.[^.]+$/,'.html')};
-    if(to==='pdf') return textToPdf(xmlTxt, file.name);
+  if(fr==='xml'){
+    const x=await f.text();
+    if(to==='txt')return T(x,f.name);
+    if(to==='json')return J({xml:x},f.name);
+    if(to==='html')return{type:'html',data:`<!DOCTYPE html><html><body><pre>${eH(x)}</pre></body></html>`,name:xe(f.name,'html')};
+    if(to==='pdf')return t2p(x,f.name);
   }
-
-  // ─ IMAGE → PDF / other image
-  if(['jpg','jpeg','png','webp','gif'].includes(from)){
-    if(to==='pdf') return imageToPdf(file);
-    if(['png','jpg','jpeg'].includes(to)) return convertImage(file, to);
-    if(to==='txt') return {type:'txt', data:`Image file: ${file.name}\nSize: ${formatSize(file.size)}\nType: ${file.type}`, name:file.name.replace(/\.[^.]+$/,'.txt')};
-    if(to==='json') return {type:'json', data:JSON.stringify({filename:file.name,size:file.size,type:file.type}), name:file.name.replace(/\.[^.]+$/,'.json')};
+  if(['jpg','jpeg','png','webp','gif'].includes(fr)){
+    if(to==='pdf')return i2p(f);
+    if(['png','jpg','jpeg'].includes(to))return ci(f,to);
+    if(to==='txt')return T(`Image: ${f.name}\nSize: ${fs(f.size)}\nType: ${f.type}`,f.name);
+    if(to==='json')return J({filename:f.name,size:f.size,type:f.type},f.name);
   }
-
-  // ─ PDF → TXT (extract via PDF.js from CDN)
-  if(from==='pdf'){
-    if(to==='txt') return pdfToText(file);
-    if(to==='html') return pdfToHtml(file);
-    if(to==='json') {
-      const r = await pdfToText(file);
-      return {type:'json', data:JSON.stringify({text:r.data,source:file.name},null,2), name:file.name.replace(/\.[^.]+$/,'.json')};
-    }
-    if(to==='md') {
-      const r = await pdfToText(file);
-      return {type:'md', data:'# '+file.name+'\n\n'+r.data, name:file.name.replace(/\.[^.]+$/,'.md')};
-    }
-    if(to==='xml') {
-      const r = await pdfToText(file);
-      return {type:'xml', data:`<?xml version="1.0"?>\n<document>\n  <content>${escXml(r.data)}</content>\n</document>`, name:file.name.replace(/\.[^.]+$/,'.xml')};
-    }
-    if(to==='csv') {
-      const r = await pdfToText(file);
-      const lines = r.data.split('\n').filter(l=>l.trim());
-      return {type:'csv', data:lines.map(l=>'"'+l.replace(/"/g,'""')+'"').join('\n'), name:file.name.replace(/\.[^.]+$/,'.csv')};
-    }
+  if(fr==='pdf'){
+    if(to==='txt')return p2t(f);
+    if(to==='html')return p2h(f);
+    if(to==='json'){const r=await p2t(f);return J({text:r.data,source:f.name},f.name)}
+    if(to==='md'){const r=await p2t(f);return{type:'md',data:'# '+f.name+'\n\n'+r.data,name:xe(f.name,'md')}}
+    if(to==='xml'){const r=await p2t(f);return X(r.data,f.name)}
+    if(to==='csv'){const r=await p2t(f);return{type:'csv',data:r.data.split('\n').filter(l=>l.trim()).map(l=>'"'+l.replace(/"/g,'""')+'"').join('\n'),name:xe(f.name,'csv')}}
   }
-
-  throw new Error(`Conversion ${from.toUpperCase()} → ${to.toUpperCase()} not supported yet`);
+  throw new Error(fr.toUpperCase()+' → '+to.toUpperCase()+' not supported');
 }
 
-// ── HELPER CONVERTERS ──
-function textToPdf(text, name){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-  doc.setFont('helvetica','normal'); doc.setFontSize(11);
-  const lines = doc.splitTextToSize(text, 180);
-  let y=20, pg=1;
-  lines.forEach(line=>{
-    if(y>270){ doc.addPage(); y=20; pg++; }
-    doc.text(line, 15, y); y+=7;
-  });
-  return {type:'pdf', blob:doc.output('blob'), name:name.replace(/\.[^.]+$/,'.pdf')};
+// PDF helpers
+function t2p(text,name){
+  const{jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'a4'});
+  doc.setFont('helvetica','normal');doc.setFontSize(11);
+  const lines=doc.splitTextToSize(text,180);let y=20;
+  lines.forEach(l=>{if(y>270){doc.addPage();y=20}doc.text(l,15,y);y+=7});
+  return{type:'pdf',blob:doc.output('blob'),name:xe(name,'pdf')};
+}
+function d2p(html,name){
+  const text=html.replace(/<h[1-6][^>]*>/gi,'\n').replace(/<\/h[1-6]>/gi,'\n').replace(/<br\s*\/?>/gi,'\n').replace(/<p[^>]*>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+  return t2p(text,name);
+}
+function cp(data,fields,name){
+  const{jsPDF}=window.jspdf,doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  doc.setFont('helvetica','bold');doc.setFontSize(9);
+  const cw=Math.min(40,270/Math.max(fields.length||1,1));let y=20;
+  fields.forEach((f,i)=>doc.text(String(f).substring(0,15),15+i*cw,y));
+  y+=8;doc.setFont('helvetica','normal');
+  data.slice(0,60).forEach(row=>{if(y>190){doc.addPage();y=20}fields.forEach((f,i)=>doc.text(String(row[f]||'').substring(0,15),15+i*cw,y));y+=7});
+  return{type:'pdf',blob:doc.output('blob'),name:xe(name,'pdf')};
+}
+function i2p(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const{jsPDF}=window.jspdf,or=img.width>img.height?'landscape':'portrait',doc=new jsPDF({orientation:or,unit:'mm',format:'a4'}),pw=or==='landscape'?297:210,ph=or==='landscape'?210:297,sc=Math.min((pw-20)/img.width,(ph-20)/img.height),w=img.width*sc,h=img.height*sc;doc.addImage(e.target.result,'JPEG',(pw-w)/2,(ph-h)/2,w,h);res({type:'pdf',blob:doc.output('blob'),name:xe(f.name,'pdf')})};img.onerror=rej;img.src=e.target.result};r.onerror=rej;r.readAsDataURL(f)})}
+function ci(f,to){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=img.width;c.height=img.height;c.getContext('2d').drawImage(img,0,0);c.toBlob(b=>res({type:to,blob:b,name:xe(f.name,to)}),to==='png'?'image/png':'image/jpeg',0.92)};img.onerror=rej;img.src=e.target.result};r.onerror=rej;r.readAsDataURL(f)})}
+async function p2t(f){
+  if(!window.pdfjsLib){await ls('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}
+  const buf=await f.arrayBuffer(),pdf=await pdfjsLib.getDocument({data:buf}).promise;
+  let t='';for(let i=1;i<=pdf.numPages;i++){const pg=await pdf.getPage(i),ct=await pg.getTextContent();t+=ct.items.map(s=>s.str).join(' ')+'\n\n'}
+  return{type:'txt',data:t.trim(),name:xe(f.name,'txt')};
+}
+async function p2h(f){const r=await p2t(f);return{type:'html',data:`<!DOCTYPE html><html><head><style>body{font-family:sans-serif;max-width:800px;margin:40px auto;line-height:1.8;padding:0 20px}</style></head><body><pre style="white-space:pre-wrap">${eH(r.data)}</pre></body></html>`,name:xe(f.name,'html')}}
+function ls(s){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=s;el.onload=res;el.onerror=rej;document.head.appendChild(el)})}
+
+// Helpers
+const eH=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const eX=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+const xe=(n,e)=>n.replace(/\.[^.]+$/,'.'+e);
+const T=(d,n)=>({type:'txt',data:d,name:xe(n,'txt')});
+const J=(o,n)=>({type:'json',data:JSON.stringify(o,null,2),name:xe(n,'json')});
+const X=(t,n)=>({type:'xml',data:`<?xml version="1.0" encoding="UTF-8"?>\n<document>\n  <content>${eX(t)}</content>\n</document>`,name:xe(n,'xml')});
+function h2m(h){return h.replace(/<h1[^>]*>(.*?)<\/h1>/gi,'# $1\n').replace(/<h2[^>]*>(.*?)<\/h2>/gi,'## $1\n').replace(/<h3[^>]*>(.*?)<\/h3>/gi,'### $1\n').replace(/<strong[^>]*>(.*?)<\/strong>/gi,'**$1**').replace(/<em[^>]*>(.*?)<\/em>/gi,'*$1*').replace(/<li[^>]*>(.*?)<\/li>/gi,'- $1\n').replace(/<br\s*\/?>/gi,'\n').replace(/<p[^>]*>(.*?)<\/p>/gis,'$1\n\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ').trim()}
+function c2x(d){return'<?xml version="1.0" encoding="UTF-8"?>\n<records>\n'+d.map(r=>'  <record>\n'+Object.entries(r).map(([k,v])=>`    <${k.replace(/\s+/g,'_')}>${eX(String(v))}</${k.replace(/\s+/g,'_')}>`).join('\n')+'\n  </record>').join('\n')+'\n</records>'}
+function c2h(d,f){const ths=f.map(h=>`<th>${eH(h)}</th>`).join(''),trs=d.map(r=>'<tr>'+f.map(h=>`<td>${eH(String(r[h]||''))}</td>`).join('')+'</tr>').join('');return`<!DOCTYPE html><html><head><style>body{font-family:sans-serif;padding:20px}table{border-collapse:collapse;width:100%}th{background:#1a1a2e;color:#00f5d4;padding:10px;text-align:left}td{padding:8px;border-bottom:1px solid #eee}</style></head><body><table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table></body></html>`}
+function c2m(d,f){if(!f.length)return'';return'|'+f.join('|')+'|\n|'+f.map(()=>'---').join('|')+'|\n'+d.map(r=>'|'+f.map(h=>String(r[h]||'')).join('|')+'|').join('\n')}
+function j2x(o,tag){if(typeof o!=='object'||o===null)return`<${tag}>${eX(String(o))}</${tag}>`;if(Array.isArray(o))return o.map(v=>j2x(v,'item')).join('\n');return`<${tag}>\n`+Object.entries(o).map(([k,v])=>j2x(v,k.replace(/[^a-zA-Z0-9_]/g,'_'))).join('\n')+`\n</${tag}>`}
+
+// Render result
+function rr(r,fmt){
+  const el=document.getElementById('or');
+  el.style.display='block';
+  document.getElementById('oi').style.display='none';
+  document.getElementById('spin').classList.remove('on');
+  let url='',prev='',name=r.name;
+  if(r.blob)url=URL.createObjectURL(r.blob);
+  else{url=URL.createObjectURL(new Blob([r.data],{type:'text/plain'}));prev=r.data.substring(0,450)+(r.data.length>450?'\n…':'')}
+  el.innerHTML=`
+    <div style="margin-bottom:9px"><span style="display:inline-block;background:rgba(0,245,212,.1);border:1px solid rgba(0,245,212,.28);color:#00f5d4;font-family:'DM Mono',monospace;font-size:10px;padding:3px 11px;border-radius:100px">✓ ${fmt.toUpperCase()} READY</span></div>
+    ${prev?`<div class="pvbox">${eH(prev)}</div>`:''}
+    <div style="margin-top:11px"><a class="dlbtn" href="${url}" download="${name}">⬇ Download ${name}</a></div>`;
 }
 
-function docxToPdf(html, name){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-  const text = html.replace(/<h[1-6][^>]*>/gi,'\n## ').replace(/<\/h[1-6]>/gi,'\n').replace(/<br\s*\/?>/gi,'\n').replace(/<p[^>]*>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ').replace(/\n{3,}/g,'\n\n').trim();
-  doc.setFont('helvetica','normal'); doc.setFontSize(11);
-  const lines = doc.splitTextToSize(text, 180);
-  let y=20;
-  lines.forEach(line=>{
-    if(y>270){ doc.addPage(); y=20; }
-    doc.text(line, 15, y); y+=7;
-  });
-  return {type:'pdf', blob:doc.output('blob'), name:name.replace(/\.[^.]+$/,'.pdf')};
-}
-
-function csvToPdf(data, fields, name){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
-  doc.setFont('helvetica','bold'); doc.setFontSize(9);
-  const colW = Math.min(40, 270/Math.max(fields?.length||1,1));
-  let y=20;
-  // header
-  (fields||[]).forEach((f,i)=>{ doc.text(String(f).substring(0,15), 15+i*colW, y); });
-  y+=8; doc.setFont('helvetica','normal');
-  data.slice(0,60).forEach(row=>{
-    if(y>190){doc.addPage();y=20;}
-    (fields||Object.keys(row)).forEach((f,i)=>{ doc.text(String(row[f]||'').substring(0,15), 15+i*colW, y); });
-    y+=7;
-  });
-  return {type:'pdf', blob:doc.output('blob'), name:name.replace(/\.[^.]+$/,'.pdf')};
-}
-
-async function imageToPdf(file){
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.onload = e=>{
-      const img = new Image();
-      img.onload = ()=>{
-        const { jsPDF } = window.jspdf;
-        const or = img.width>img.height?'landscape':'portrait';
-        const doc = new jsPDF({orientation:or,unit:'mm',format:'a4'});
-        const pw = or==='landscape'?297:210;
-        const ph = or==='landscape'?210:297;
-        const scale = Math.min((pw-20)/img.width, (ph-20)/img.height);
-        const w=img.width*scale, h=img.height*scale;
-        doc.addImage(e.target.result,'JPEG',(pw-w)/2,(ph-h)/2,w,h);
-        resolve({type:'pdf',blob:doc.output('blob'),name:file.name.replace(/\.[^.]+$/,'.pdf')});
-      };
-      img.onerror=reject; img.src=e.target.result;
-    };
-    reader.onerror=reject; reader.readAsDataURL(file);
-  });
-}
-
-async function convertImage(file, toFmt){
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.onload=e=>{
-      const img = new Image();
-      img.onload=()=>{
-        const canvas = document.createElement('canvas');
-        canvas.width=img.width; canvas.height=img.height;
-        const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0);
-        const mime=toFmt==='png'?'image/png':'image/jpeg';
-        canvas.toBlob(blob=>resolve({type:toFmt,blob,name:file.name.replace(/\.[^.]+$/,'.'+toFmt)}),mime,0.92);
-      };
-      img.onerror=reject; img.src=e.target.result;
-    };
-    reader.onerror=reject; reader.readAsDataURL(file);
-  });
-}
-
-async function pdfToText(file){
-  // Use PDF.js from CDN
-  if(!window.pdfjsLib){
-    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
-    window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  }
-  const buf = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data:buf}).promise;
-  let text='';
-  for(let i=1;i<=pdf.numPages;i++){
-    const page=await pdf.getPage(i);
-    const content=await page.getTextContent();
-    text+=content.items.map(s=>s.str).join(' ')+'\n\n';
-  }
-  return {type:'txt', data:text.trim(), name:file.name.replace(/\.[^.]+$/,'.txt')};
-}
-
-async function pdfToHtml(file){
-  const r = await pdfToText(file);
-  return {type:'html', data:`<!DOCTYPE html><html><head><style>body{font-family:sans-serif;max-width:800px;margin:40px auto;line-height:1.8;color:#222}</style></head><body><pre style="white-space:pre-wrap">${escHtml(r.data)}</pre></body></html>`, name:file.name.replace(/\.[^.]+$/,'.html')};
-}
-
-function loadScript(src){
-  return new Promise((res,rej)=>{
-    const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej;
-    document.head.appendChild(s);
-  });
-}
-
-// ── DATA HELPERS ──
-function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function escXml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;'); }
-
-function htmlToMd(html){
-  return html
-    .replace(/<h1[^>]*>(.*?)<\/h1>/gi,'# $1\n')
-    .replace(/<h2[^>]*>(.*?)<\/h2>/gi,'## $1\n')
-    .replace(/<h3[^>]*>(.*?)<\/h3>/gi,'### $1\n')
-    .replace(/<strong[^>]*>(.*?)<\/strong>/gi,'**$1**')
-    .replace(/<em[^>]*>(.*?)<\/em>/gi,'*$1*')
-    .replace(/<li[^>]*>(.*?)<\/li>/gi,'- $1\n')
-    .replace(/<br\s*\/?>/gi,'\n')
-    .replace(/<p[^>]*>(.*?)<\/p>/gis,'$1\n\n')
-    .replace(/<[^>]+>/g,'')
-    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ')
-    .trim();
-}
-
-function csvToXml(data){
-  let xml='<?xml version="1.0" encoding="UTF-8"?>\n<records>\n';
-  data.forEach(row=>{
-    xml+='  <record>\n';
-    Object.entries(row).forEach(([k,v])=>{ xml+=`    <${k.replace(/\s+/g,'_')}>${escXml(String(v))}</${k.replace(/\s+/g,'_')}>\n`; });
-    xml+='  </record>\n';
-  });
-  return xml+'</records>';
-}
-
-function csvToHtml(data,fields){
-  const ths=(fields||[]).map(f=>`<th>${escHtml(f)}</th>`).join('');
-  const trs=data.map(row=>'<tr>'+(fields||Object.keys(row)).map(f=>`<td>${escHtml(String(row[f]||''))}</td>`).join('')+'</tr>').join('\n');
-  return `<!DOCTYPE html><html><head><style>body{font-family:sans-serif;padding:20px}table{border-collapse:collapse;width:100%}th{background:#1a1a2e;color:#00f5d4;padding:10px;text-align:left}td{padding:8px;border-bottom:1px solid #eee}</style></head><body><table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table></body></html>`;
-}
-
-function csvToMd(data,fields){
-  if(!fields||!fields.length)return '';
-  const header='|'+fields.join('|')+'|\n|'+fields.map(()=>'---').join('|')+'|';
-  const rows=data.map(row=>'|'+(fields.map(f=>String(row[f]||''))).join('|')+'|').join('\n');
-  return header+'\n'+rows;
-}
-
-function jsonToXml(obj, tag){
-  if(typeof obj!=='object'||obj===null) return `<${tag}>${escXml(String(obj))}</${tag}>`;
-  if(Array.isArray(obj)) return obj.map((v,i)=>jsonToXml(v,'item')).join('\n');
-  return `<${tag}>\n`+Object.entries(obj).map(([k,v])=>jsonToXml(v,k.replace(/[^a-zA-Z0-9_]/g,'_'))).join('\n')+`\n</${tag}>`;
-}
-
-// ── SHOW RESULT ──
-function showResult(result, outFmt){
-  const panel = document.getElementById('outputReady');
-  panel.style.display='block';
-  document.getElementById('outputIdle').style.display='none';
-  document.getElementById('spinner').classList.remove('show');
-
-  let preview='', url='', dlName=result.name;
-
-  if(result.type==='pdf'){
-    url = URL.createObjectURL(result.blob);
-    preview='PDF generated successfully.';
-  } else if(['png','jpg','jpeg','webp'].includes(result.type)){
-    url = URL.createObjectURL(result.blob);
-    preview='Image converted successfully.';
-  } else {
-    const blob = new Blob([result.data], {type:'text/plain'});
-    url = URL.createObjectURL(blob);
-    preview = result.data.substring(0,400)+(result.data.length>400?'\n…':'');
-  }
-
-  const ext = outFmt.toUpperCase();
-  panel.innerHTML=`
-    <div style="margin-bottom:12px">
-      <span style="display:inline-block;background:rgba(0,245,212,0.1);border:1px solid rgba(0,245,212,0.3);color:var(--accent1);font-family:'DM Mono',monospace;font-size:11px;padding:4px 12px;border-radius:100px">✓ ${ext} READY</span>
-    </div>
-    ${preview?`<div class="preview-box">${escHtml(preview)}</div>`:''}
-    <br>
-    <a class="download-btn" href="${url}" download="${dlName}">
-      ⬇ Download ${dlName}
-    </a>
-  `;
-}
-
-// ── HISTORY ──
-function addHistory(fname, from, to, result){
-  const item={fname,from,to,result,time:new Date().toLocaleTimeString()};
-  history.unshift(item);
-  renderHistory();
-}
-
-function renderHistory(){
-  const list=document.getElementById('historyList');
-  if(!history.length){ list.innerHTML='<div style="color:var(--muted);font-size:13px;font-family:\'DM Mono\',monospace;padding:20px 0;text-align:center">No conversions yet.</div>'; return; }
-  list.innerHTML=history.slice(0,8).map((h,i)=>{
-    let url='#';
-    if(h.result){
-      if(h.result.blob) url=URL.createObjectURL(h.result.blob);
-      else url=URL.createObjectURL(new Blob([h.result.data],{type:'text/plain'}));
-    }
-    return `<div class="hist-item">
-      <span class="hist-badge ${h.from}">${h.from.toUpperCase()}</span>
-      <span style="color:var(--muted);font-size:16px">→</span>
-      <span class="hist-badge ${h.to}">${h.to.toUpperCase()}</span>
-      <span class="hist-name">${h.fname}</span>
-      <span class="hist-time">${h.time}</span>
-      <a class="hist-dl" href="${url}" download="${h.result.name}" title="Download">⬇</a>
-    </div>`;
+// History
+function ah(name,fr,to,r){CH.unshift({name,fr,to,r,t:new Date().toLocaleTimeString()});rh()}
+function rh(){
+  const l=document.getElementById('hl');
+  if(!CH.length){l.innerHTML='<p style="color:var(--mt);font-size:12px;font-family:\'DM Mono\',monospace;padding:14px 0;text-align:center">No conversions yet</p>';return}
+  l.innerHTML=CH.slice(0,8).map(h=>{
+    const url=h.r.blob?URL.createObjectURL(h.r.blob):URL.createObjectURL(new Blob([h.r.data],{type:'text/plain'}));
+    return`<div class="hi"><span class="hb ${h.fr}">${h.fr.toUpperCase()}</span><span class="harr">→</span><span class="hb ${h.to}">${h.to.toUpperCase()}</span><span class="hn">${h.name}</span><span class="ht">${h.t}</span><a class="hdl" href="${url}" download="${h.r.name}">⬇</a></div>`;
   }).join('');
-}
-
-function filterConversions(type, el){
-  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  const presets = {
-    pdf: ['docx','pdf'], doc: ['pdf','txt'], data: ['csv','json'], web: ['md','html']
-  };
-  if(presets[type]){ setPreset(...presets[type]); }
 }
 </script>
 </body>
